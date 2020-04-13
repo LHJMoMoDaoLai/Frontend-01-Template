@@ -4,6 +4,14 @@
 # 前端架构知识体系
 ## 前端架构知识体系脑图
 [前端架构知识体系脑图](./前端架构知识体系.xmind)
+## ECMA所有类型
+Reference,   
+List,   
+Completion,  
+Property Descriptor,   
+Lexical Environment,   
+Environment Record,  
+Data Block  
 ## 追溯法 
 
 # 工程体系
@@ -73,3 +81,72 @@ spritejs https://github.com/spritejs/spritejs
 活跃度= 日活/月活  
 无头浏览器  不渲染 能把页面渲染完  不会真正渲染出来，看不见的浏览器  做规则检查  
 高速增长的公司可以掩盖一切  
+
+## 作业
+URL解析代码
+
+```
+ function urlData(){
+        let scheme,authority,path,query,fragment;
+        // foo：//example.com：8042 / over / there？name = ferret＃nose 
+        // scheme = ALPHA *（ALPHA / DIGIT /“ +” /“-” /“。”） 小写
+            // authority   = [ userinfo "@" ] host [ ":" port ]
+
+                    //    The authority component is preceded by a double slash ("//") and is
+                    //    terminated by the next slash ("/"), question mark ("?"), or number
+                    //    sign ("#") character, or by the end of the URI.
+                // userinfo    = *( unreserved / pct-encoded / sub-delims / ":" )
+                // host        = IP-literal / IPv4address / reg-name
+                    // IP-literal = "[" ( IPv6address / IPvFuture  ) "]"
+                    // IPvFuture  = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
+                // port = * DIGIT 
+            // path
+                // path          = path-abempty    ; begins with "/" or is empty
+                //     / path-absolute   ; begins with "/" but not "//"
+                //     / path-noscheme   ; begins with a non-colon segment
+                //     / path-rootless   ; begins with a segment
+                //     / path-empty      ; zero characters
+            //  query  = *( pchar / "/" / "?" )
+                // The query component is indicated by the first question
+                // mark ("?") character and terminated by a number sign ("#") character
+                // or by the end of the URI.
+            //  Fragment   = *( pchar / "/" / "?" )
+
+            // if ((not strict) and (R.scheme == Base.scheme)) then
+            //     undefine(R.scheme);
+            // endif;
+            // if defined(R.scheme) then
+            //     T.scheme    = R.scheme;
+            //     T.authority = R.authority;
+            //     T.path      = remove_dot_segments(R.path);
+            //     T.query     = R.query;
+            // else
+            //     if defined(R.authority) then
+            //         T.authority = R.authority;
+            //         T.path      = remove_dot_segments(R.path);
+            //         T.query     = R.query;
+            //     else
+            //         if (R.path == "") then
+            //         T.path = Base.path;
+            //         if defined(R.query) then
+            //             T.query = R.query;
+            //         else
+            //             T.query = Base.query;
+            //         endif;
+            //         else
+            //         if (R.path starts-with "/") then
+            //             T.path = remove_dot_segments(R.path);
+            //         else
+            //             T.path = merge(Base.path, R.path);
+            //             T.path = remove_dot_segments(T.path);
+            //         endif;
+            //         T.query = R.query;
+            //         endif;
+            //         T.authority = Base.authority;
+            //     endif;
+            //     T.scheme = Base.scheme;
+            // endif;
+
+            // T.fragment = R.fragment;
+    }
+```
