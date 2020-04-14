@@ -5,13 +5,21 @@
 ## 前端架构知识体系脑图
 [前端架构知识体系脑图](./前端架构知识体系.xmind)
 ## ECMA所有类型
-Reference,   
-List,   
-Completion,  
-Property Descriptor,   
-Lexical Environment,   
-Environment Record,  
-Data Block  
+Undefined,  
+Null,  
+Boolean,  
+String,  
+Symbol,  
+Number,  
+Object,  
+Specification,  
+    Reference,     
+    List,     
+    Completion,    
+    Property Descriptor,     
+    Lexical Environment,   
+    Environment Record,  
+    Data Block  
 ## 追溯法 
 
 # 工程体系
