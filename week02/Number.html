@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    var a = 0.1
+    var b = 0.2
+    const intmemory = new Uint8Array(8)
+    const memory = new Float32Array(intmemory.buffer)
+    intmemory[0] = 0b00000000
+    intmemory[1] = 0b00001000
+    console.log(memory)
+    // memory[0] = a
+    //
+    //
+    // for(let i = 0;i<8;i++){
+    //     let s = (intmemory[i].toString(2))
+    //     console.log(new Array(9 - s.length).join('0')+s)
+    //     // console.log(`${i}: ${intarr[i].toString(2)}`);
+    // }
+    // console.log(intmemory)
+
+</script>
+
+</body>
+</html>
