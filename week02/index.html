@@ -16,6 +16,11 @@
     "厉害".codePointAt(0).toString(16)
         "\t".codePointAt(0)
         "\v"
+        "\u2028\u2029".fromCharCode
 
+function UTF8Encoding(str){
+    return str.split("").map(i=>`\\u${i.charCodeAt().toString(16)}`).join("")
+}
+console.log(UTF8Encoding("哈哈"))
 </script>
 </html>

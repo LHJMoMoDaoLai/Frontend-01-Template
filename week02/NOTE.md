@@ -8,17 +8,83 @@
 ##### 乔姆斯基谱系
 1. 0型：无限制文法 
 相对于其他三型来说
+无限制型文法：
+? ::= ?
+<a><b> ::= "c"
+
+
+
+
+
+
+
+
+
+
+
+
+
 2. 1型：上下文相关文法  
 一个词放在这儿是这个意思，放在那儿是那个意思，词的意思和上下文相关，与无限制文法相比，上下文相关文法已经有了一定要求
+```
+? <A> ? ::= ? <B> ?
+"a"<b>"c" ::= "a" "x" "c"
+"```四则运算" <LogicalExpression> "```" ::= 
+     "```四则运算" 
+    （<AdditiveExpression> |
+        <LogicalExpression> "||" <AddtiveExpression> |
+        <LogicalExpression> "&&" <AdditiveExpression>）
+    "```"
+```
+```
+{
+    get a {return 1},
+    get:1
+}  //上下文相关文法
+```
 对编译器、解析器、引擎的实现者不友好
 3. 2型：上下文无相关文法  
 大部分语言都是主体上上下文无相关文法，  
 javascript不是上下文无关文法，但是他会在某个小的点上违反上下文无关原则，但是这个语言呢99%都是上下文无关的
 this 语义上多变，语法上不多变
 a.this  和 this.a是两个东西  这个就属于上下文相关
+上下文无关文法  
+```
+<A> ::= ? 
+<Add>::= <MultiplicativeExpression>  | 
+    <Add> "+" <MultiplicativeExpression> |
+    <Add> "-" <MultiplicativeExpression> 
+```
 4. 3型：正则文法 
 能用正则表达式解析的文法 
 对表达能力的限制比较强
+```
+2**1**2 //正则文法  
+
+```
+javascript正则支持回溯，处理的比较慢，大部分是线性的  
+大部分语言都是二型：上下文无关文法
+```
+<A> ::= <A> ?
+<A> ::= ?<A> 错的
+```
+正则表达式写四则预算
+```/0|[1-9][0-9]*/```
+
+AdditiveExpression:
+    MutiplicativeExpression
+    AdditiveExpression + MultiplicativeExpression 
+    AdditiveExpression - MultiplicativeExpression
+
+现代语言的特例：
+c++中，*可能表示称号或者指针，具体是哪个，取决于型号前面的标识符是否被声明为类型 
+    声明的标识符可能在很前面了，所以语法跟语义相关了。非形式化语言，连0型都达不到。在写编译器的时候，预处理一下，跟javascript pre-process一样，预处理一边class声明，再根据这个class申明再解析。
+VB中，<可能是小于号，也可能是XML直接量的开始，取决于当前位置是否可以接受XML直接量
+    一型文法-上下文相关文法：
+Python中，行首的tab符和空格会根据上一行的行首空白以一定规则被处理成虚拟终结符indent或者dedent 
+    行首生成大括号，在词法分析阶段就被处理了。
+JavaScript中，/可能表示除号，也可能是正则表达式开头，处理方式类似于VB，字符串模板中也需要特殊处理}，还有自动插入分号规则
+    同VB
 
 文法  =》词法 + 语法
 词法通过正则做一遍初略的处理，把语言分成一个个词，再把词作为输入流，去做语法分析。
@@ -35,36 +101,36 @@ a.this  和 this.a是两个东西  这个就属于上下文相关
 7. +表示至少一次  
 可递归
 小练习：
+1. "a""b"，可以以任何个“a”和“b组成
 ```
-"a"
-"b"
-可以以任何个“a”和“b组成
 <Program>::= "a"+ | "b"+  //表示多个a或多个b 但是没有ab
 <Program>::= ("a"+ | "b"+)+
-定义一个加法，允许连续加  
+```
+2. 定义一个加法，允许连续加 
+```
 <Number>::=  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 <Decimal>::= "0" |( "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9") <Number>*
 0
-1 0304903490 //( "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9")1-9的数开头
-排除了01,这个不是合法的十进制数
+1 0304903490 //( "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9")1-9的数开头排除了01,这个不是合法的十进制数
 
 <Add>::= <Decimal> "+" <Decimal> //加法 十进制数加上一个十进制数 必须两个数
-如果想一个数加也可以 只需要去掉加好后面的
+//如果想一个数加也可以 只需要去掉加好后面的
 <Add>::= <Decimal>
-如果想多个数连加，只需要递归一下
+//如果想多个数连加，只需要递归一下
 <Add>::=<Add> "+" <Decimal>//连加
 
-把以上的合并一下：
+//把以上的合并一下：
 <Add>::= <Decimal> | <Add> "+" <Decimal>
 <Decimal>//一个数
 <Add> "+" <Decimal>//多个数
 
-乘法：
+//乘法：
 <MultiplicativeExpression>::= <Decimal>  | <MultiplicativeExpression> "*" <Decimal>
 
-
-四则运算  
-1 + 2 * 3  //加法 左项1*1；右项2*3  =》两个乘法表达式相加得来的  =》
+```
+3. 四则运算  
+```
+//1 + 2 * 3  //加法 左项1*1；右项2*3  =》两个乘法表达式相加得来的  =》
 <Add>::= <MultiplicativeExpression> | <Add>  "+" <MultiplicativeExpression>
            
 <logicalExpression>::= <Add> |
@@ -82,108 +148,91 @@ a.this  和 this.a是两个东西  这个就属于上下文相关
     <Add> "+" <MultiplicativeExpression> |
     <Add> "-" <MultiplicativeExpression> 
 
-终结符：
-Number
-+ - * /
-非终结符  
-MultiplicativeExpression  
-AddtiveExpression
+```
 
-
-无限制型文法：
-? ::= ?
-<a><b> ::= "c"
-上下文相关文法
-? <A> ? ::= ? <B> ?
-"a"<b>"c" ::= "a" "x" "c"
-"```四则运算" <LogicalExpression> "```" ::= 
-     "```四则运算" 
-    （<AdditiveExpression> |
-        <LogicalExpression> "||" <AddtiveExpression> |
-        <LogicalExpression> "&&" <AdditiveExpression>）
-    "```"
-上下文无关文法  
-<A> ::= ? 
-<Add>::= <MultiplicativeExpression>  | 
-    <Add> "+" <MultiplicativeExpression> |
-    <Add> "-" <MultiplicativeExpression> 
-正则文法
-<A> ::= <A> ?
-<A> ::= ?<A> 错的
-
-
-正则表达式写四则预算
-/0|[1-9][0-9]*/
-
-{
-    get a {return 1},
-    get:1
-}  //上下文相关文法
-
-2**1**2 //正则文法  
-javascript正则支持回溯，处理的比较慢，大部分是线性的  
-大部分语言都是二型：上下文无关文法
-
-AdditiveExpression:
-    MutiplicativeExpression
-    AdditiveExpression + MultiplicativeExpression 
-    AdditiveExpression - MultiplicativeExpression
-
-现代语言的特例：
-c++中，*可能表示称号或者指针，具体是哪个，取决于型号前面的标识符是否被声明为类型  非形式化语言，连0型都达不到 标识符的申明可能在最前面，
-VB中，<可能是小于号，也可能是XML直接量的开始，取决于当前位置是否可以接受XML直接量
-Python中，行首的tab符和空格会根据上一行的行首空白以一定规则被处理成虚拟终结符indent或者dedent 
-JavaScript中，/可能表示除号，也可能是正则表达式开头，处理方式类似于VB，字符串模板中也需要特殊处理}，还有自动插入分好规则
+语言的分类
+1. 形式语言-用途
+1.1 数据描述语言
+```
+JSON,HTML,XAML,SQL,CSS
+```
+1.2 编程语言
+```
+C,C++,JAVA,C#,Python,Ruby,Perl,Lisp,T-SQL,Clojure,Haskell,Javascript
+```
+2. 形式语言-表达方式
+2.1 声明式语言
+```
+JSON,HTML,XAML,SQL,CSS,Lisp,Clojure,Haskell
+```
+2.2 命令型语言
+```
+C,C++,JAVA,C#,Python,Ruby,Perl,Javascript
 ```
 
 
-图灵完备性  TSQL
-css不是图灵完备的
 
+#### 图灵完备性  TSQL
+跟图灵机等效的都具有图灵完备性  图灵停机问题  一切不都是能被计算机去解决的
 可计算的  能计算的  =》图灵机 
 图灵统计问题  
-
-命令式
-goto
-if和while
-声明式-lambda
-分支和递归
-
-动态与静态
-动态
+1. 命令式 -图灵机
+. goto
+. if和while
+2. 声明式-lambda
+. 分支和递归
+css不是图灵完备的
+想做计算机语言，必须图灵完备性。  
+#### 动态与静态
+1. 动态
 在用户设备/在线服务器上
 在产品实际运行时
-Runtime
+Runtime 运行时
+2. 静态
+在程序员的设备上  
+产品开发时  
+Compiletime 编译时
+为了让语言少出bug,更静态好
+#### 类型系统
+1. 动态类型系统与静态类型系统
+2. 强类型与弱类型
+隐士转换=》弱类型   TS
+动态类型 不等于 强类型
+无隐士转换的类型系统，叫做强类型，有隐士转换的类型系统，叫做弱类型
+String+ Number
+String == Boolean  
+Boolean =>Number  String=>Number  再比较
+"0" =false "false" != false
+弱类型纠错更难。  
+C++是弱类型
+3. 复合类型
+结构体（键值对）
+```{a:T1,b:T2}```
+函数签名（参数列表和返回值）
+二元组  位置必须对
+``` (T1,T2)=>T3```
+4. 子类型
+类型继承 
+凡是能用到Array<Parent>的地方，都能用Arry<Child> =>协变
+凡是能用Function<Child>的地方，都能用Function<Parent> =>逆变
 
-静态
-    在程序员的设备上  
-    产品开发时  
-    Compiletime
+逆变/协变
+同向=》协变
+逆向=》逆变
 
-类型系统
-    动态类型系统与静态类型系统
-    强类型与弱类型
-        隐士转换=》弱类型   TS
-        动态类型 不等于 强类型
-
-        String+ Number
-        String == Boolean 
-    复合类型
-        结构体（键值对）
-        函数签名（参数列表和返回值）
-    子类型
-        类型继承 
-        逆变/协变
-        同向=》协变
-        逆向=》逆变
-
-    一般命令式编程语言
-    Atom原子       Expression   statement       strucure       Program
-    Identifier     Atom         Expression      Function       Program
-    Literal        Operator     Keyword         Class          Module
-                   Punctuator   Punctuator      Process        Package
-                                                Namespace      Library
-
+#### 一般命令式编程语言
+1. Atom原子
+    Identifier(标识符)、Literal
+    变量名、直接量
+2. Expression 
+    Atom、Operator（操作符） 
+    表达式     
+3. statement 语句
+   Expression、Keyword、Punctuator（符号）
+4. strucure 结构化
+   Function、Class、Process、Namespace
+5. Program
+   Program、Module、Package、Library
 
 语法   =》 语义   运行时
 乘法：右结合  2**2**3 === 256
@@ -311,8 +360,47 @@ PS 不要用这两个东西
         
         UTF8转gbk
         浏览器的un
-        
-    
+    ""/''/``     
+    "\b" 
+    ### 特殊字符
+    ```  
+    u+0020 空格
+    u+0021 感叹号
+    u+0022 双引号
+    u+0023 井号
+    u+0024 价钱/货币符号
+    u+0025 百分比符号
+    u+0026 英文“and”的简写符号
+    u+0027 引号
+    u+0028 左圆括号
+    u+0029 右圆括号
+    u+002a 星号
+    u+002b 加号
+    u+002c 逗号
+    u+002d 连字符号/减号
+    u+002e 句号
+    u+002f 由右上至左下的斜线
+
+    u+003A 冒号
+    u+003B 分号
+    u+003c 小于符号
+    u+003d 等于号
+    u+003e 大于符号
+    u+003f 问号
+    u+0040 英文at的简写符号
+
+    u+005B 左方括号
+    u+005C 由左上至右下的斜线
+    u+005D 右方括号
+    u+005e 抑扬（重音符号）^
+    u+005f 下划线_
+    u+0060 重音符
+
+    u+007b 左花括号
+    u+007C 或符号|
+    u+007D 右花括号
+    u+007E 波浪纹~    
+    ```
     
     
     
