@@ -1,0 +1,50 @@
+<script>
+    function ConvertStringToNumber(string,x){
+        if(arguments.length<2){
+            x=10
+        }
+        var chart  = string.split("");
+        var number = 0
+        var i= 0
+        while(i<chart.length&&chart[i] !='.'){
+            number = number * x
+            number += chart[i].codePointAt(0)-'0'.codePointAt(0)
+            i++
+        }
+        if(chart[i] == '.'){
+            i++
+        }
+        var fraction = 1
+        while(i<chart.length){
+            fraction = fraction / x
+            number += (chart[i].codePointAt(0)-'0'.codePointAt(0))*fraction
+            i++
+        }
+        // fraction = fraction /x
+        return number
+    }
+    ConvertStringToNumber("100")
+
+    function ConvertNumberToString(number,x){
+        var integer = Math.floor(number)
+        let fraction = String(number).match(/\.\d+$/);
+        if (fraction) {
+            fraction = fraction[0].replace('.', '');
+        }
+        var string = ""
+        while(integer>0){
+            string = String(integer % x)+string;
+            integer = Math.floor(integer / x)
+        }
+        return fraction?`${string}.${fraction}`:string
+    }
+    console.log(ConvertNumberToString("10.991",10))
+
+    
+for(let i = 0;i<10;i++){
+	console.log(i)
+	let i = 0;
+	console.log(i)
+}
+    
+</script>
