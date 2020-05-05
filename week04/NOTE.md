@@ -4,16 +4,16 @@
 
 在oc中，可以引用一下类型：函数、代码片段、module模块
 在oc的jsContext中，有两种方式引用js:
-. evaluateScript
+1. evaluateScript
 ```
 (JSValue *)evaluateScript:(NSString *)script;
 ```
-. evaluateScript:withSourceURL 
+2. evaluateScript:withSourceURL 
 ```
 (JSValue *)evaluateScript:(NSString *)script
             withSourceURL:(NSString *)sourceURL;
 ```
-. function
+3. function
 ```
 //var context = new JSContext;
 JSContext* context = [[JSContext alloc] init];
@@ -71,43 +71,54 @@ var x = (1,2,3)
 console.log(x)打印3
 同理：result拿到了匿名函数
 
-
+1. 宏任务和微任务
 其实所有的JS代码都是一个微任务，只是哪些微任务构成了一个宏任务；执行在JS引擎里的就是微任务，执行在JS引擎之外的就是宏任务，循环宏任务的工作就是事件循环。
 并不是说有then才会存在微任务，有then可能产生一个宏任务中有多个微任务的情况，但是一切js中的代码都是在微任务中执行的。
-
-拿浏览器举例：setTimeout、setInterval、.onclick 这种其实不是 JS 语法本身的 API，是 JS 的宿主浏览器提供的 API, 所以是宏任务。浏览器的事件也是宏任务，比如click，keyup之类的UI交互，
-一个Script标签内的就算是一个宏任务
-而 Promise 是 JS 本身自带的 API，这种就是微任务。
+    * 举例：
+    拿浏览器举例：setTimeout、setInterval、.onclick 这种其实不是 JS 语法本身的 API，是 JS 的宿主浏览器提供的 API, 所以是宏任务。浏览器的事件也是宏任务，比如click，keyup之类的UI交互，
+    一个Script标签内的就算是一个宏任务
+    而 Promise 是 JS 本身自带的 API，这种就是微任务。
 总结：宿主提供的方法是宏任务，JS 自带的是微任务
 
-这样设计有什么好处吗  
+2. 这样设计有什么好处吗  
 这是以一个被迫的，promise是js标准的一部分，不提供微任务，就不能解释promise,宏任务不在js标准内，而微任务在js标准内。
 
+3. oc中的宏任务执行等待
 正常的promise是没有办法把微任务延迟执行的。在一个promise中有多少个resolve，就有多少个额外的微任务
 按理 promise 产生一个微任务，而 funciton 是按顺序执行，应该会比promise 结果早一点。是因为OC 里面每调用一步都会把微任务执行完，oc不是一个同步的代码，是可以等的，
 任务列表列里面有很多宏任务，然后每个宏任务里面有一个微任务列表，每个宏任务执行第二个宏任务之前会把自己内部的微任务执行完
-await、then之前都是同步代码
 
+4. js引擎和宏任务 
 js引擎类的目的就是把一段js执行掉，js引擎似于一个库，而一个宏任务队列类似于把一个库包成了一个服务，一个服务就会一直在那里等着，筛给它一段代码它就执行一下，
 
-在执行宏任务的时候， setTimeout的定时任务到时间了是怎么被执行的？
+5. oc中在执行宏任务的时候， setTimeout的定时任务到时间了是怎么被执行的？
 在遇到settTimeout之前有sleep。宏任务有数组去存，会把宏任务放到数组里，在执行evaluateScript之前会sleep一下，等下一个任务的时间
+如下伪代码：
+```
+var taskQueue = [{time:1000,code:@"",function:f}]
+var task = taskQueue.shift();
+//[context evaluateScript: task.code]
+//或者[task.f callWithArguments:@[]]
+```
 setTimeout不会是有一个线程去计时，单开线程，管理很麻烦，还要图同步计时结果，很麻烦  
 setTimeout不准时执行的
 oc的sleep是真的这个线程就闲下来了，和while(true)等待输入是不一样的，while(true)不是一个真正的死循环，换到jsvascript中可以说是一个await sleep
 
-
+6. 宏任务中的同步代码以及宏任务的优先级、微任务的执行顺序
 一个宏任务里的同步代码也可以理解为微任务  只不过比宏任务里异步代码微任务先入队
 微任务是没有优先级的，宏任务是有优先级的。一个宏任务里至少先入队一个微任务，就是这个宏任务里的同步代码，同步代码会归为一个微任务 只有 .then 才能产生新的微任务   
 一个宏任务里面的同步的代码最先执行，微任务根据入队时间进行执行。
+
+7. 宏任务中的异步代码
+await、then之前都是同步代码
 await后面的代码，就相当于多了一个then，await产生的then在分号后面。
 只有 new Promise(resolve => resolve()).then(() => { ... ... })能产生方式微任务队列的方法，generator产生的是同步代码。也就是说，在没有Promise的时代，就没有微任务一说。
 一个promise 里面的then10秒后执行 还一个promise 的then 3秒后执行 他们是同一级别的promise 他们有可能不再一个宏任务的微任务队列里面，重点在于10秒怎么执行。
 微任务里写个10万次循环，后面的宏任务都点等待   
 
-逗号运算符是依次执行所有语句
+8. 逗号运算符是依次执行所有语句
 
-如果遇到throw Error的话，后面的宏任务微任务还执行吗?
+9. 如果遇到throw Error的话，后面的宏任务微任务还执行吗?
 还执行，只打断一个微任务，不会把后面的都干掉，还可以catch呢
 ```
 new Promise(resolve => resolve()).then(()=>{
@@ -360,11 +371,11 @@ new Promise(function (resolve) {
 // promise2
 ```
 分析：
-首先执行async1,里面的同步代码有：async1 start
-再执行async2，里面没有await，都是同步代码， 输出：async2
-再执行Promise resolve之前都是同步代码：输出：promise1
-同步代码都是第一个微任务
-第二个微任务：await async2()之后的代码：输出：async1 end
-第三个微任务：promise resolve：输出：promise2
+首先执行async1,里面的同步代码有：async1 start  
+再执行async2，里面没有await，都是同步代码， 输出：async2  
+再执行Promise resolve之前都是同步代码：输出：promise1  
+同步代码都是第一个微任务  
+第二个微任务：await async2()之后的代码：输出：async1 end  
+第三个微任务：promise resolve：输出：promise2  
 
  
