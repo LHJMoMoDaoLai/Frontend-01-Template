@@ -77,7 +77,8 @@ console.log(x)打印3
     * 举例：
     拿浏览器举例：setTimeout、setInterval、.onclick 这种其实不是 JS 语法本身的 API，是 JS 的宿主浏览器提供的 API, 所以是宏任务。浏览器的事件也是宏任务，比如click，keyup之类的UI交互，
     一个Script标签内的就算是一个宏任务
-    而 Promise 是 JS 本身自带的 API，这种就是微任务。
+    而 Promise 是 JS 本身自带的 API，这种就是微任务。MutationObserver也可以产生微任务
+    Promise微任务入队时jsContext操作的，MutationObserver微任务时oc操作的
 总结：宿主提供的方法是宏任务，JS 自带的是微任务
 
 2. 这样设计有什么好处吗  
