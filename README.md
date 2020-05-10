@@ -26,3 +26,25 @@
 
 ## 注意事项
  如果对 Git 和 GitHub 不太了解，请参考 [Git 官方文档](https://git-scm.com/book/zh/v2) 或者极客时间的[《玩转 Git 三剑客》](https://time.geekbang.org/course/intro/145)视频课程。
+
+
+## tip
+### 正则 
+'s123rhjeh'.match(/(123)/)
+捕获：
+【“123”，“123”，index:1,input:1....】
+?: => 不捕获
+'s123rhjeh'.match(/(?:123)/)
+【“123”，index:1,input:1....】
+\1;\2\3
+带回溯的正则时间复杂度就到一个比较不确定的值
+不带回溯的正则时间复杂度跟字符串长度和正则长度成正比的 
+不推荐使用正则，结果不可预期，
+
+### 超精度的有理数
+用数组存数字，
+遇到除法，整数加余数的方法来处理
+
+https://github.com/Ele-Peng/Frontend-01-Template/blob/master/week03/converStringToNumber.md
+https://github.com/xiaodaobiepao/Frontend-01-Template/blob/master/week03/homework.md
+https://github.com/Yhxang/Frontend-01-Template/blob/master/week03/SpecialObject.md

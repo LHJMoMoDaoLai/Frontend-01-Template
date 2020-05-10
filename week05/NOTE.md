@@ -118,3 +118,33 @@ realm之间可以互相通信吗？在c++李是可以的，在js中，可以创�
         服务端不能主动给客户端发消息的，必须要客户端先给服务端发。
         http2 服务端给客户端推送的时缓存，是文件
         websocket
+
+
+
+
+### http 
+相关标准文档：https://tools.ietf.org/html/rfc2616#section-3.5
+1. request
+  * 组成部分
+  有三部分组成，分别是：
+    * Request line
+    Request line又分为三部分：
+      * Method
+      最常见的method有GET、POST、OPTIONS、DELETE、PUT、TRACE、CONNECT、HEAD
+      * 路径PATH 
+      url斜杠后面问号之前的部分，理论上表示目录
+      * http协议版本
+    * headers
+    headers和body之间隔着一个空行
+    content-type有四种：
+      * text/html  HTML格式
+      * multipart/form-data 需要在表单中进行文件上传时，就需要使用该格式
+      * application/json JSON数据格式
+      * application/x-www-form-urlencoded ```<form encType=””>```中默认的encType，form表单数据被编码为key/value格式发送到服务器（表单默认的提交数据的格式）
+    * body
+
+    Request line: POST / http/1.1
+    header: Host: 127.0.0.1
+            cobtent-Type:application/x-www-form-urlencoded
+    body: field1=aaa$code=102
+
