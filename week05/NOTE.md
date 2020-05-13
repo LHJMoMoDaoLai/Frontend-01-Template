@@ -149,7 +149,7 @@ HTTP2标准文档:
     * headers
     headers和body之间隔着一个空行  
     header包含以下几种：
-      ![Request header](./img/requestHeader.png)  
+      ![RequestHeader](./img/requestHeader.png)  
     content-type有四种：
       * text/html  HTML格式
       * multipart/form-data 需要在表单中进行文件上传时，就需要使用该格式
@@ -186,7 +186,7 @@ HTTP2标准文档:
     * headers
     headers和body有空行  
     header有一下几种：
-    ![response header](./img/responseHeader.png)
+    ![responseHeader](./img/responseHeader.png)
     * body
     trucnked
     单独的一行：表示多少个字符，后面跟字符
