@@ -123,19 +123,32 @@ realm之间可以互相通信吗？在c++李是可以的，在js中，可以创�
 
 
 ### http 
-相关标准文档：https://tools.ietf.org/html/rfc2616#section-3.5
+http相关标准文档：
+  * HTTP1.1 [链接](https://tools.ietf.org/html/rfc2616)
+  * HTTP1.1 [链接](https://tools.ietf.org/html/rfc7234)
+HTTPS标准文档：
+  * HTTPS [链接](https://tools.ietf.org/html/rfc2818)
+HTTP2标准文档:
+  * HTTP2 [链接](https://tools.ietf.org/html/rfc7540)
+
 1. request
   * 组成部分
   有三部分组成，分别是：
     * Request line
     Request line又分为三部分：
       * Method
-      最常见的method有GET、POST、OPTIONS、DELETE、PUT、TRACE、CONNECT、HEAD
+        最常见的method有GET、POST、OPTIONS、DELETE、PUT、TRACE、CONNECT、HEAD
+        浏览器通过地址栏访问页面都是GET方法，表单提交产生POST方法；  
+        HEAD跟GET类似，只返回请求头，多数由Javascript发起；  
+        PUT和DELETE分别表示添加资源和删除资源，但实际上这只是语义上的一种约定，并没有强制约束;   
+        CONNECT现在多用于HTTPS和WebSocket；OPTIONS和TRACE一般用于调试，多数线上服务不支持  
       * 路径PATH 
       url斜杠后面问号之前的部分，理论上表示目录
       * http协议版本
     * headers
-    headers和body之间隔着一个空行
+    headers和body之间隔着一个空行  
+    header包含以下几种：
+      ![Request header](./img/requestHeader.png)  
     content-type有四种：
       * text/html  HTML格式
       * multipart/form-data 需要在表单中进行文件上传时，就需要使用该格式
@@ -154,16 +167,32 @@ realm之间可以互相通信吗？在c++李是可以的，在js中，可以创�
     response line又分为三部分：
       * http协议
       * http状态码
+        常见状态码有一下几种：
+        * 1xx：临时回应，表示客户端请继续
+        * 2xx：请求成功
+          200：请求成功
+        * 3xx：表示请求目标有变化，希望客户端进一步处理
+          301&302：永久性与零时性跳转
+          304：客户端缓存没有更新
+        * 4xx：客户端请求错误
+          403：无权限
+          404：请求页面不存在
+          418： It's a teapot。这是个彩蛋，来自ietf的一个愚人节玩笑（[链接](https://tools.ietf.org/html/rfc2324)）
+        * 5xx： 服务端请求错误
+          500：服务端请求错误
+          503：服务端暂时性错误，可以等一会儿再试
       * http状态文本
     * headers
-    headers和body有空行
+    headers和body有空行  
+    header有一下几种：
+    ![response header](./img/responseHeader.png)
     * body
     trucnked
     单独的一行：表示多少个字符，后面跟字符
     字符
     0：直到0为止
     断包只能用状态机来做，这个data事件的触发事件：
-    * buffer写满了
-    * 服务端收到了ip包
+      * buffer写满了
+      * 服务端收到了ip包
     服务端传的是个流，指不定给你发多少个包，这个buffer有可能比包大，有可能比包小
 

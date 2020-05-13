@@ -1,66 +1,7 @@
-// > var xhr = new XMLHttpRequest
-// < undefined
-
-// > xhr.open("get","127.0.0.1:8088",true)
-// < undefined
-
-// > xhr.send()
-// < undefined
-
-// > xhr.responseText
-// < "ok"
-
-// > xhr.HEADERS_RECEIVED
-// < 2
-
-
+//引用net模块
 const net = require('net');
 
-// const client = net.createConnection({ 
-//   host:"127.0.0.1",
-//   port: 8089
-// }, () => {
-//   // 'connect' 监听器
-//   console.log('已连接到服务器');
-//   // client.write('GET / HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 11\r\n\r\nname=winter');
-//   // client.write('GET / HTTP/1.1\r\n');
-//   // client.write('Host: 127.0.0.1\r\n');
-//   // client.write('Content-Length: 11\r\n');
-//   // client.write('Content-Type: application/x-www-form-urlencoded\r\n');
-//   // client.write('\r\n');
-//   // client.write('name=winter');
-//   // client.write('\r\n');
-
-
-// //   client.write(`
-// //   GET / HTTP/1.1\r
-// //   Content-Type: application/x-www-form-urlencoded\r
-// //   Content-Length: 11\r
-// //   \r
-// //   name=winter`)
-//     let request = new Request({
-//         method: "POST",
-//         path:"/",
-//         host: "127.0.0.1",
-//         port:"8088",
-//         headers:{
-//           ['X-Foo2']:"customed"
-//         },
-//         body: {
-//             name:"winter"
-//         }
-//     })
-//     console.log(request.toString())
-//     client.write(request.toString())
-// });
-// client.on('data', (data) => {
-//   console.log(data.toString());
-//   client.end();
-// });
-// client.on('end', () => {
-//   console.log('已从服务器断开');
-// });
-
+//封装请求部分
 class Request{
     //method,url = host + port + path,
     //body:k/v
@@ -97,10 +38,12 @@ ${this.bodyText}`;
      
     send(connection){
       return new Promise((resolve,reject) => {
+        //解析respose
         const parser = new ResponseParser
         if(connection){
           connection.write(this.toString())
         }else {
+          //建立TCP连接
           connection = net.createConnection({
               host: this.host,
               port: this.port,
@@ -110,7 +53,9 @@ ${this.bodyText}`;
             },
           );
         }
+        //接收服务端发货的数据包
         connection.on('data', (data) => {
+          //接收数据包并判断包是否结束
           parser.receive(data.toString())
           if(parser.isFinished){
             resolve(parser.response)
@@ -157,7 +102,6 @@ class TruckedBodyParser{
     // console.log(JSON.stringify(char))
     // console.log(this.current)
     if(this.current === this.WAITING_LENGTH){
-      
       if(char === '\r'){
         if(this.length === 0){
           // console.log("///////")
@@ -213,6 +157,7 @@ class ResponseParser{
     this.headerValue = ""
     this.bodyParser = ""
   }
+  //接收数据包中的字符串，拆分字符，判断字符属于response的哪一部分
   receive(string){
     for(var i = 0;i<string.length; i ++){
       this.receiveChar(string.charAt(i))
@@ -230,6 +175,7 @@ class ResponseParser{
       body: this.bodyParser.content.join("")
     }
   }
+  //判断字符属于response的哪一部分，把有用的保留起来
   receiveChar(char){
     if(this.current === this.WAITING_STATUS_LINE){
       if(char === '\r'){
@@ -249,6 +195,7 @@ class ResponseParser{
       }else if(char == "\r"){
         this.current = this.WAITING_HEADER_BLOCK_END
         if(this.headers['Transfer-Encoding']==='chunked'){
+          //准备分发解析body的任务给bodyParser对象
           this.bodyParser = new TruckedBodyParser();
         }
       } else {
@@ -276,6 +223,7 @@ class ResponseParser{
         this.current = this.WAITING_BODY;
       }
     }else if(this.current === this.WAITING_BODY){
+      //接收body字符串并解析
       this.bodyParser.receiveChar(char)
     }
 
