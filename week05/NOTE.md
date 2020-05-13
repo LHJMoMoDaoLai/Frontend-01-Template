@@ -83,41 +83,42 @@ realm之间可以互相通信吗？在c++李是可以的，在js中，可以创�
 5. 语句声明
 6. 表达式
 7. 直接量/变量/this
-   # 浏览器工作原理
-   ## 总论与HTTP
-   1. 浏览器url敲一下回车，浏览器发生了啥?
-    url - http  > HTML - parse > dom -css computing > DOM With CSS -layout> DOM With position - render > Bitmap
-   url经过了HTTP请求，拿到了HTML,解析，生成dom树，解析css,排版，dom树位置确定，然后渲染，然后得到一张图片。
-   houdini可以在侯三节操作（从css解析开始一直往后）
-   1. ISO-OSI七层网络模型
-      1. 应用
-        http
-        require("http")
-      2. 表示
-        http
-        require("http")
-      3. 会话
-        http
-        require("http")
-      4. 传输
-        tcp、TLS/SSL
-        require("net")
-      5. 网络
-        Internet
-      6. 数据链路
-        4G/5G/WIFI
-      7. 物理层
-        4G/5G/WIFI
-    1. TCP与IP的一些基础知识
-        流、端口 =>require("net")  
-        包、IP地址 =>libnet/libcap
-        调试：charles(mac)、fiddler(windows)
-    2. HTTP
-        Request
-        Response
-        服务端不能主动给客户端发消息的，必须要客户端先给服务端发。
-        http2 服务端给客户端推送的时缓存，是文件
-        websocket
+
+# 浏览器工作原理
+## 总论与HTTP
+1. 浏览器url敲一下回车，浏览器发生了啥?
+url - http  > HTML - parse > dom -css computing > DOM With CSS -layout> DOM With position - render > Bitmap
+url经过了HTTP请求，拿到了HTML,解析，生成dom树，解析css,排版，dom树位置确定，然后渲染，然后得到一张图片。
+houdini可以在侯三节操作（从css解析开始一直往后）
+1. ISO-OSI七层网络模型
+  1. 应用
+    http
+    require("http")
+  2. 表示
+    http
+    require("http")
+  3. 会话
+    http
+    require("http")
+  4. 传输
+    tcp、TLS/SSL
+    require("net")
+  5. 网络
+    Internet
+  6. 数据链路
+    4G/5G/WIFI
+  7. 物理层
+    4G/5G/WIFI
+1. TCP与IP的一些基础知识
+    流、端口 =>require("net")  
+    包、IP地址 =>libnet/libcap
+    调试：charles(mac)、fiddler(windows)
+2. HTTP
+    Request
+    Response
+    服务端不能主动给客户端发消息的，必须要客户端先给服务端发。
+    http2 服务端给客户端推送的时缓存，是文件
+    websocket
 
 
 
