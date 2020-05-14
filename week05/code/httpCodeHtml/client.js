@@ -1,6 +1,6 @@
 //引用net模块
 const net = require('net');
-
+const parser  = require("./parser.js")
 //封装请求部分
 class Request{
     //method,url = host + port + path,
@@ -248,5 +248,6 @@ void async function(){
     }
   })
   let response = await request.send()
-  console.log(response)
+  let dom = parser.paeseHTML(response.body)
+  // console.log(response)
 }()

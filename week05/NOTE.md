@@ -197,3 +197,212 @@ HTTP2标准文档:
       * 服务端收到了ip包
     服务端传的是个流，指不定给你发多少个包，这个buffer有可能比包大，有可能比包小
 
+
+
+# 有限状态机处理字符串
+
+### 有限状态机
+每一个状态都是一个机器 
+  在每一个机器里，都可以做计算、存储、输出
+  所有的机器接受的输入时一致的。（参数一致的函数）
+  状态机本身没有状态，就是一个纯函数
+每一个机器知道下一个状态
+  每一个机器都有确定的下一个状态（moore）
+  根据输入决定下一个状态（Mealy）
+
+### 在一个字符串中找到字符"a"
+  ```
+  function match(string){
+    for(let c of string){
+      if(c=== 'a'){
+        return  true
+      }
+      
+    }
+    return false
+  }
+  ```
+  找到ab
+   ```
+  function match(string){
+    let foundA = false
+    for(let c of string){
+      if(c=== 'a'){
+        foundA = true
+      } else if(foundA&& c=='b'){
+        return true
+      } else {
+        foundA = false//acb
+      }
+    }
+    return false
+  }
+  ```
+  找到abcdef  =》时间复杂度 M*N
+  ```
+  function match(string){
+    let foundA = false
+    let foundB = false
+    let foundC = false
+    let foundD = false
+    let foundE = false
+    let foundF = false
+    for(let c of string){
+      if(c=== 'a'){
+        foundA = true
+      } else if(foundA&& c=='b'){
+        foundB = true
+      }else if(foundA&& c=='c'){
+        foundC = true
+      }else if(foundA&& c=='d'){
+        foundD = true
+      }else if(foundA&& c=='e'){
+        foundE = true
+      }else {
+        foundA = false//acb
+        foundB = false
+        foundC = false
+        foundD = false
+        foundE = false
+        foundF = false
+      }
+    }
+    return false
+  }
+  ```
+  状态机写法
+  费递归，自己没调用自己
+```
+  function match(string){
+    let state = start;
+    for(let c of string){
+      state = state(C)
+    }
+    return state == end
+  }
+  function start(c){
+    if(c == 'a'){
+      return foundA;
+    }else {
+      return start;
+    }
+  }
+  function foundA(c){
+    if(c == 'b'){
+      return foundB;
+    }else {
+      return start(c);
+    }
+  }
+
+  function foundB(c){
+    if(c == 'c'){
+      return foundC;
+    }else {
+      return start(c);
+    }
+  }
+  function foundC(c){
+    if(c == 'd'){
+      return foundD;
+    }else {
+      return start(c);
+    }
+  }
+
+  function foundD(c){
+    if(c == 'e'){
+      return foundE;
+    }else {
+      return start(c);
+    }
+  }
+  function foundE(c){
+    if(c == 'f'){
+      return foundF;
+    }else {
+      return start(c);
+    }
+  }
+
+  function foundF(c){
+    if(c == 'f'){
+      return end;
+    }else {
+      return start(c);
+    }
+  }
+```
+状态机abcabx
+
+```
+  function match(string){
+    let state = start;
+    for(let c of string){
+      state = state(C)
+    }
+    return state == end
+  }
+  function start(c){
+    if(c == 'a'){
+      return foundA;
+    }else {
+      return start;
+    }
+  }
+  function foundA(c){
+    if(c == 'b'){
+      return foundB;
+    }else {
+      return start(c);
+    }
+  }
+
+  function foundB(c){
+    if(c == 'c'){
+      return foundC;
+    }else {
+      return start(c);
+    }
+  }
+  function foundC(c){
+    if(c == 'd'){
+      return foundD;
+    }else {
+      return start(c);
+    }
+  }
+
+  function foundA2(c){
+    if(c == 'a'){
+      return foundB2;
+    }else {
+      return start(c);
+    }
+  }
+  function foundB2(c){
+    if(c == 'b'){
+      return foundX;
+    }else {
+      return start(c);
+    }
+  }
+
+  function foundX(c){
+    if(c == 'x'){
+      return end;
+    }else {
+      return foundB(c);
+    }
+  }
+```
+
+作业abababx处理
+可选作业：KMP,如何用状态机处理位置的pattern？
+
+
+# HTML的解析
+
+
+开始标签、结束标签、自封闭标签
+4. 创建元素
