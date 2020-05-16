@@ -1,6 +1,6 @@
 //引用net模块
 const net = require('net');
-const parser  = require("./parser.js")
+const parser1  = require("./parser6.js")
 //封装请求部分
 class Request{
     //method,url = host + port + path,
@@ -94,6 +94,7 @@ class TruckedBodyParser{
     this.isFinished = false;
     this.length = 0;
 
+    this.bodyBuffer = []
     this.content = []
     this.current = this.WAITING_LENGTH
   }
@@ -111,7 +112,7 @@ class TruckedBodyParser{
         this.current = this.WAITING_LENGTH_LINE_END;
       } else {
         this.length *= 16;
-        this.length += char.charCodeAt(0) - '0'.charCodeAt(0);
+        this.length += parseInt(char,16)
       }
     } else if(this.current === this.WAITING_LENGTH_LINE_END){
       if(char === '\n'){
@@ -126,6 +127,11 @@ class TruckedBodyParser{
         this.current = this.WAITING_LENGTH;
       } 
     } else if(this.current === this.READING_TRUNK){
+      // const chars = utf8.stringToBytes(char)
+      // for(let i = 0;i<chars.length;i++){
+      //   this.bodyBuffer.push(chars[i]);
+        
+      // }
       this.content.push(char)
       this.length --;
       if(this.length === 0){
@@ -248,6 +254,8 @@ void async function(){
     }
   })
   let response = await request.send()
-  let dom = parser.paeseHTML(response.body)
+
+  // console.log(response.body)
+  let dom = parser1.parseHTML(response.body)
   // console.log(response)
 }()
