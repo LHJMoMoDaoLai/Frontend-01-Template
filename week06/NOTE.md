@@ -20,7 +20,7 @@
     return false
   }
   ```
-  找到ab
+### 找到ab
    ```
   function match(string){
     let foundA = false
@@ -36,7 +36,7 @@
     return false
   }
   ```
-  找到abcdef  =》时间复杂度 M*N
+### 找到abcdef  =》时间复杂度 M*N
   ```
   function match(string){
     let foundA = false
@@ -68,8 +68,8 @@
     return false
   }
   ```
-  状态机写法
-  没一个函数都是一个状态机，
+### 状态机写法
+  每一个函数都是一个状态机，
   ```
   funcyion state(input){ //函数参数就是输入
     //在函数中，可以自由地编写代码，处理每一个状态的逻辑
@@ -84,7 +84,7 @@
     state = state(input) //把状态机的返回值作为下一个状态
   }
   ```
-  没递归，自己没调用自己
+  
 ```
   function match(string){
     let state = start;
@@ -97,7 +97,7 @@
     if(c == 'a'){
       return foundA;
     }else {
-      return start;
+      return start;//没递归，自己没调用自己
     }
   }
   function foundA(c){
@@ -146,8 +146,7 @@
     }
   }
 ```
-状态机abcabx
-
+### 状态机abcabx
 ```
   function match(string){
     let state = start;
@@ -246,8 +245,11 @@ Toy-Browser只挑选其中一部分的状态，完成一个最简单版本
 # css
 ### 环境准备
 npm i css 
-第一步：
+第一步：收集css规则
+不考虑link的情况
 遇到style标签时，我们把css规则保存起来  
+在标签出栈之前执行addCSSRules的操作，如果在标签入栈时执行，那么标签里的style样式还没加载完  
+
 这里我们调
 第二步：添加调用
 创建一个元素后，立即计算css

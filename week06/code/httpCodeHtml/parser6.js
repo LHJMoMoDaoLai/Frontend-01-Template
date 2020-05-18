@@ -1,7 +1,7 @@
 
 let currentToken = null
 let currentAttribute = null
-乐天currentTextNode = null
+let currentTextNode  = null
 
 const EOF = Symbol("EOF")//EOF:end of file  标识文件结束
 
