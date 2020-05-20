@@ -255,7 +255,7 @@ void async function(){
   })
   let response = await request.send()
 
-  console.log(response.body)
+  // console.log(response.body)
   let dom = parser.parseHTML(response.body)
-  // console.log(response)
+  console.log(JSON.stringify(dom))
 }()
