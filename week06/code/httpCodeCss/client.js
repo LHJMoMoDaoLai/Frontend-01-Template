@@ -1,6 +1,6 @@
 //引用net模块
 const net = require('net');
-const parser  = require("./parser.js")
+const parser  = require("./parser1.js")
 //封装请求部分
 class Request{
     //method,url = host + port + path,

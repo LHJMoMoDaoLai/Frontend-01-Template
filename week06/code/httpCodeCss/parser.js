@@ -1,19 +1,24 @@
+
+const EOF = Symbol("EOF")//EOF:end of file  标识文件结束
 let css = require("css")
 let currentToken = null
 let currentAttribute = null
 let currentTextNode  = null
 
-const EOF = Symbol("EOF")//EOF:end of file  标识文件结束
 
 let stack = [{type:"document", children:[]}]
-
 let rules = [];
 
-function match(element,selector){
+
+function addCSSRules(text){
+    var ast = css.parse(text);
+    // console.log(JSON.stringify(ast,null,"    "));
+    rules.push(...ast.stylesheet.rules);
+}
+function matchF(element,selector){
     if(!selector || !element.attributes){
         return false;
     }
-
     if(selector.charAt(0) == "#"){
         var attr = element.attributes.filter(attr => attr.name === "id")[0]
         if(attr && attr.value === selector.replace("#","")){
@@ -30,48 +35,41 @@ function match(element,selector){
         }
     }
     return false
-
 }
 
-function specificity(selector){
+function specificity(selector) {
     var p = [0,0,0,0];
-    var selectorParts = selectors.split(" ");
-    for(var part of selectorParts){
-        if(part.charAt(0) == "#"){
-            p[1] +=1;
-        } else if(part.charAt(0) =="."){
-            p[2] += 1; 
+    var selectorParts = selector.split(" ");
+    for (var part of selectorParts) {
+        if (part.charAt(0) == "#") {
+            p[1] += 1;
+        } else if (part.charAt(0) == ".") {
+            p[2] += 1;
         } else {
-            p[3] += 1
+            p[3] += 1;
         }
     }
     return p;
 }
-function addCSSRules(text){
-    var ast = css.parse(text);
-    // console.log(JSON.stringify(ast,null,"    "));
-    rules.push(...ast.stylesheet.rules);
-}
-function compare(sp1,sp2){
-    if(sp1[0]-sp2[0]){
-        return sp1[0]-sp2[0]
+function compare(sp1,sp2) {
+    if (sp1[0] - sp2[0]) {
+        return sp1[0] -sp2[0];
     } 
-    if(sp1[1] - sp2[1]){
-        return sp1[1]-sp2[1]
+    if (sp1[1] - sp2[1]) {
+        return sp1[1] -sp2[1];
     }
-    return sp1[3]- sp2[3]
+    if (sp1[2] - sp2[2]) {
+        return sp1[2] -sp2[2];
+    }
+    return sp1[3] - sp2[3];
 
 }
 function computedCSS(element){
-   
-    // console.log(rules)
-    // console.log(1111111111111111111111111111111)
-    // console.log(element)
     //获取父元素序列 
     //slice切片 两个参数  如果不传，就复制一份，不污染stack
     var elements = stack.slice().reverse()
 
-    //拆分选择器
+    // //拆分选择器
     if(!element.computedStyle){
         element.computedStyle = {}
     }
@@ -79,10 +77,7 @@ function computedCSS(element){
     for(let rule of rules){
         var selectorParts = rule.selectors[0].split(" ").reverse();
         
-        console.log("----------selectorParts  start----------------")
-        console.log(selectorParts)
-        console.log("----------selectorParts    end----------------")
-        if(!match(element,selectorParts[0])){
+        if(!matchF(element,selectorParts[0])){
             continue
         }
 
@@ -90,24 +85,16 @@ function computedCSS(element){
         var j = 1//表示每一个selector
         for(let i =0 ; i<elements.length; i++){
            
-            if(match(elements[i],selectorParts[j])){
+            if(matchF(elements[i],selectorParts[j])){
                 j++
             }
-            // console.log(elements[i])
-            // console.log("-----------------selectorParts[j]-------------------------")
-            // console.log(j)
-            // console.log(selectorParts)
-            // console.log(selectorParts[j])
         }
         let matched = false //每一条规则的mached
         if(j >= selectorParts.lengh){
             matched = true
         }
-        // console.log(matched)
-        // console.log("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm")
+        
         if(matched){
-            // console.log("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm")
-            
             // console.log("Element",element,"matched rule", rule)
             var sp = specificity(rule.selectors[0]);
             var computedStyle = element.computedStyle;
@@ -124,22 +111,13 @@ function computedCSS(element){
                 }
                 
             }
-            console.log(element.computedStyle)
+            // console.log(element.computedStyle)
         }
     }
 }
 function emit(token){
     let top = stack[stack.length-1];
-    if(token.type === "text"){
-        if(currentTextNode == null){
-            currentTextNode = {
-                type: "text",
-                content:""
-            }
-            top.children.push(currentTextNode)
-        }
-        currentTextNode.content += token.content
-    }
+   
 
     if(token.type === "startTag"){
         let element = {
@@ -158,9 +136,8 @@ function emit(token){
         }
         computedCSS(element)
 
-        top.children.push(element)
         element.parent = top;
-
+        top.children.push(element)
         if(!token.isSelfClosing){
             stack.push(element)
         }
@@ -168,7 +145,7 @@ function emit(token){
     } else if(token.type ==="endTag" ){
         if(top.tagName ==token.tagName){
             /***************遇到style标签，执行添加css规则的操作**********************/
-            if(top.tagName =="style"){
+            if(top.tagName === "style"){
                 addCSSRules(top.children[0].content)
             }
             stack.pop();
@@ -177,6 +154,15 @@ function emit(token){
         }
         currentTextNode = null
 
+    } else  if(token.type === "text"){
+        if(currentTextNode == null){
+            currentTextNode = {
+                type: "text",
+                content:""
+            }
+            top.children.push(currentTextNode)
+        }
+        currentTextNode.content += token.content
     }
 }
 
@@ -210,6 +196,10 @@ function tagOpen(c){
         }
         return tagName(c)
     }else {
+        emit({
+            type: "text",
+            content: c
+        })
         return ;
     }
 }
@@ -279,8 +269,6 @@ function attributeName(c){
 }
 
 function afterAttributeName(c){
-    // console.log(11111111)
-    // console.log(c)
     if(c.match((/^[\t\n\f ]$/))){
         return afterAttributeName
     } else if(c === "/"){
@@ -389,9 +377,8 @@ function selfClosingStartTag(c){
        
     }
 }
-function parseHTML(html){
-    // console.log(html)
-    debugger;
+
+module.exports.parseHTML = function parseHTML(html){
     let state = data;
     for(let c of html){
         // console.log(c)
@@ -401,5 +388,3 @@ function parseHTML(html){
     state = state(EOF)//处理文件结束的
     // console.log(stack[0])
 }
-
-module.exports.parseHTML = parseHTML
