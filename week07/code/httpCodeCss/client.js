@@ -257,5 +257,5 @@ void async function(){
 
   // console.log(response.body)
   let dom = parser.parseHTML(response.body)
-  console.log(JSON.stringify(dom))
+  console.log(JSON.stringify(dom,null,"    "))
 }()

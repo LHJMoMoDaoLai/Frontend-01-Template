@@ -396,5 +396,6 @@ module.exports.parseHTML = function parseHTML(html){
     }
 
     state = state(EOF)//处理文件结束的
+    return stack[0]
     console.log(stack[0].children[0])
 }

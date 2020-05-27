@@ -4,7 +4,7 @@ let css = require("css")
 let currentToken = null
 let currentAttribute = null
 let currentTextNode  = null
-
+let layout =  require("./layout")
 
 let stack = [{type:"document", children:[]}]
 let rules = [];
@@ -149,6 +149,7 @@ function emit(token){
             if(top.tagName === "style"){
                 addCSSRules(top.children[0].content)
             }
+            layout(top)
             stack.pop();
         } else {
             throw new Error("Tag start ebd doesn't match");
@@ -396,5 +397,6 @@ module.exports.parseHTML = function parseHTML(html){
     }
 
     state = state(EOF)//处理文件结束的
-    console.log(stack[0].children[0])
+    return stack[0]
+    console.log(stack[0])
 }

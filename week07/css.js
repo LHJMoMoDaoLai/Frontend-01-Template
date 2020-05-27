@@ -23,15 +23,6 @@ function happlen(element,event){
         }
     })
 }
-
-void async function(){
-    for(let standard of standards){
-        iframe.src = standard.url;
-        console.log(standard.name);
-        await happlen(iframe,"load")
-    }
-}
-
 let standards = [
     {
         "name": "Requirements for Chinese Text Layout中文排版需求",
@@ -586,3 +577,11 @@ let standards = [
         "url": "http://www.w3.org/TR/1998/NOTE-CSS-potential-19981210"
     }
 ]
+void async function(){
+    for(let standard of standards){
+        iframe.src = standard.url;
+        console.log(standard.name);
+        await happlen(iframe,"load")
+    }
+}
+
