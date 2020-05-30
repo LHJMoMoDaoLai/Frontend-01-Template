@@ -1,6 +1,8 @@
 //引用net模块
 const net = require('net');
+const images = require("images");
 const parser  = require("./parser.js")
+const render = require("./render")
 //封装请求部分
 class Request{
     //method,url = host + port + path,
@@ -49,6 +51,7 @@ ${this.bodyText}`;
               port: this.port,
             },() => {
               console.log('connected to server!');
+              // console.log(this.toString())
               connection.write(this.toString());
             },
           );
@@ -57,11 +60,14 @@ ${this.bodyText}`;
         connection.on('data', (data) => {
           //接收数据包并判断包是否结束
           parser.receive(data.toString())
+          console.log(parser.isFinished)
           if(parser.isFinished){
             resolve(parser.response)
           }
+          console.log(parser.response)
           // console.log(parser.headers)
           // resolve(data.toString());
+          // console.log(parser)
           connection.end();
         });
 
@@ -253,9 +259,21 @@ void async function(){
         name:"winter"
     }
   })
+  // console.log(222222222222222222222)
   let response = await request.send()
-
+  console.log(44444444444444444444444444444444444)
+  // console.log(response)
   // console.log(response.body)
   let dom = parser.parseHTML(response.body)
-  console.log(JSON.stringify(dom,null,"    "))
+// console.log(dom)
+// console.log(render)
+// console.log(images)
+  let viewport = images(800,600);
+  // console.log(dom.children[0].children[3].children[1])
+  render(viewport,dom.children[0].children[3].children[1].children[3]);
+
+  viewport.save("viewport.jpg")
+
+  
+  // console.log(JSON.stringify(dom,null,"    "))
 }()

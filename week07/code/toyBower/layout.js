@@ -8,10 +8,10 @@ function getStyle(element){
         element.style[prop] = element.computedStyle[prop].value
     
         if(element.style[prop].toString().match(/px$/)){
-            element.style[prop] = parseInt(elemnet.style[prop]);
+            element.style[prop] = parseInt(element.style[prop]);
         }
         if(element.style[prop].toString().match(/^[0-9\.]+$/)){
-            element.style[prop] = parseInt(elemnet.style[prop]);
+            element.style[prop] = parseInt(element.style[prop]);
         }
     }
     return element.style
@@ -26,8 +26,8 @@ function layout(element){
     if(elementStyle.display !== "flex"){
         return ;
     }
-
-    var items = element.children.filters(e=> e.type === "element")
+    console.log(element.children )
+    var items = element.children.filter(e=> e.type === "element")
 
     items.sort(function(a,b){
         return (a.order || 0) -(b.order || 0)
@@ -186,7 +186,7 @@ function layout(element){
     flexLine.mainSpace = mainSpace
 
     if(style.flexWrap === "nowrap" || isAutoMainSize){
-        flexWrap.crossSpace = (style[crossSize] !== undefined) ? style[crossSize] :crossSpace;
+        flexLine.crossSpace = (style[crossSize] !== undefined) ? style[crossSize] :crossSpace;
     } else {
         flexLine.crossSpace = crossSpace
     }
@@ -334,7 +334,41 @@ function layout(element){
     }
 
     flexLines.forEach(function(item){
-        var lineCrossSize = sty
+        var lineCrossSize = style.alignContent == "stretch" ?
+            items.crossSpace  + crossSpace / flexLines.length :
+            item.crossSpace;
+        for(var i =0;i<items.length;i++){
+            var item = items[i];
+            var itemStyle = getStyle(item);
+
+            var align = itemStyle.alignSelf || style.alignItems;
+
+            if(itemStyle[crossSize] == null){
+                itemStyle[crossSize] = (align === "stretch") ? lineCrossSize :0;
+
+                if(align === "flex-start"){
+                    itemStyle[crossStart] = crossBase;
+                    itemStyle[crossEnd] = itemStyle[crossStart] - crossSign * itemStyle[crossSize];
+                }
+                if(align === "flex-end"){
+                    itemStyle[crossEnd] = crossBase + crossSign * lineCrossSize;
+                    itemStyle[crossStart] = itemStyle[crossEnd] - crossSign * itemStyle[crossSize];
+                }
+                if(align === "center"){
+                    itemStyle[crossStart] =  crossBase + crossSign * (lineCrossSize - itemStyle[crpssSize]) /2;
+                    itemStyle[crossEnd] = itemStyle[crossStart] - crossSign * itemStyle[crossSize];
+                    
+                }
+                if(align === "stretch"){
+                    itemStyle[crossStart] =  crossBase 
+                    itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0))?
+                    itemStyle[crossSize] :lineCrossSize);
+                    
+                    itemStyle[crossSize ]= crossSign * (itemStyle[corssEnd] - itemStyle[crossStart])
+                }
+            }
+            crossBase += crossSign * (lineCrossSize +step)
+        }
     })
 
 
