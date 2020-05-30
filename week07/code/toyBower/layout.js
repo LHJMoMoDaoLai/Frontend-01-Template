@@ -26,7 +26,6 @@ function layout(element){
     if(elementStyle.display !== "flex"){
         return ;
     }
-    console.log(element.children )
     var items = element.children.filter(e=> e.type === "element")
 
     items.sort(function(a,b){
@@ -44,8 +43,8 @@ function layout(element){
     if(!style.flexDirection || style.flexDirection === "auto"){
         style.flexDirection = "row";
     }
-    if(!style.alignItem || style.alignItem ==="auto"){
-        style.alignItem = "stretch";
+    if(!style.alignItems || style.alignItems ==="auto"){
+        style.alignItems = "stretch";
     }
     if(!style.justifyContent || style.justifyContent === "auto"){
         style.justifyContent = "flex-start"
@@ -139,7 +138,7 @@ function layout(element){
     var crossSpace = 0;
 
     for(var i = 0; i < items.length; i++){
-        var item = item[i];
+        var item = items[i];
         var itemStyle = getStyle(item);
 
         if(itemStyle[mainSize] === null){
@@ -155,7 +154,7 @@ function layout(element){
             }
             flexLine.push(item)
         } else {
-            if(itemStyle[mianSize] > style[mianSize]){
+            if(itemStyle[mainSize] > style[mainSize]){
                 itemStyle[mainSize] = style[mainSize];
             }
 
@@ -284,7 +283,7 @@ function layout(element){
 
     if(!style[crossSize]){
         crossSpace = 0;
-        elementStyle [crossSpace] = 0;
+        elementStyle[crossSpace] = 0;
 
         for(var i = 0;i<flexLines.length;i++){
             elementStyle[crossSize] = elementStyle[crossSize] + flexLines[i].crossSpace;
@@ -292,7 +291,7 @@ function layout(element){
     } else {
         crossSpace = style[crossSize];
 
-        for(var i = 0;i<flexLine.length;i++){
+        for(var i = 0;i<flexLines.length;i++){
             crossSpace -= flexLines[i].crossSpace
         }
     }
@@ -335,7 +334,7 @@ function layout(element){
 
     flexLines.forEach(function(item){
         var lineCrossSize = style.alignContent == "stretch" ?
-            items.crossSpace  + crossSpace / flexLines.length :
+            item.crossSpace  + crossSpace / flexLines.length :
             item.crossSpace;
         for(var i =0;i<items.length;i++){
             var item = items[i];
@@ -364,7 +363,7 @@ function layout(element){
                     itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0))?
                     itemStyle[crossSize] :lineCrossSize);
                     
-                    itemStyle[crossSize ]= crossSign * (itemStyle[corssEnd] - itemStyle[crossStart])
+                    itemStyle[crossSize ]= crossSign * (itemStyle[crossEnd] - itemStyle[crossStart])
                 }
             }
             crossBase += crossSign * (lineCrossSize +step)

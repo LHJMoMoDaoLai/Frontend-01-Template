@@ -122,7 +122,7 @@ function emit(token){
 
     if(token.type === "startTag"){
         let element = {
-            tyle: "element",
+            type: "element",
             children:[],
             attributes:[]
         }
@@ -144,15 +144,16 @@ function emit(token){
         }
         currentTextNode = null;
     } else if(token.type ==="endTag" ){
-        if(top.tagName ==token.tagName){
+        if(top.tagName !==token.tagName){
+            throw new Error("Tag start ebd doesn't match");
+            
+        } else {
             /***************遇到style标签，执行添加css规则的操作**********************/
             if(top.tagName === "style"){
                 addCSSRules(top.children[0].content)
             }
             layout(top)
             stack.pop();
-        } else {
-            throw new Error("Tag start ebd doesn't match");
         }
         currentTextNode = null
 

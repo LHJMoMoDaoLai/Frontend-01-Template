@@ -118,13 +118,19 @@ class TruckedBodyParser{
         this.current = this.WAITING_LENGTH_LINE_END;
       } else {
         this.length *= 16;
-        this.length += char.charCodeAt(0) - '0'.charCodeAt(0);
+        this.length += parseInt(char, 16);
       }
     } else if(this.current === this.WAITING_LENGTH_LINE_END){
       if(char === '\n'){
         this.current = this.READING_TRUNK;
       } 
-    } else if(this.current === this.WAITING_NEW_LINE){
+    } else if(this.current === this.READING_TRUNK){
+      this.content.push(char)
+      this.length --;
+      if(this.length === 0){
+       this.current = this.WAITING_NEW_LINE
+      }
+   }else if(this.current === this.WAITING_NEW_LINE){
       if(char === '\r'){
         this.current = this.WAITING_NEW_LINE_END;
       } 
@@ -132,21 +138,7 @@ class TruckedBodyParser{
       if(char === '\n'){
         this.current = this.WAITING_LENGTH;
       } 
-    } else if(this.current === this.READING_TRUNK){
-      // const chars = utf8.stringToBytes(char)
-      // for(let i = 0;i<chars.length;i++){
-      //   this.bodyBuffer.push(chars[i]);
-        
-      // }
-      this.content.push(char)
-      this.length --;
-      if(this.length === 0){
-       this.current = this.WAITING_NEW_LINE
-      }
-   }
-
-    // console.log(this.content)
-    
+    } 
   }
 }
 
@@ -259,18 +251,13 @@ void async function(){
         name:"winter"
     }
   })
-  // console.log(222222222222222222222)
   let response = await request.send()
-  console.log(44444444444444444444444444444444444)
   // console.log(response)
   // console.log(response.body)
   let dom = parser.parseHTML(response.body)
-// console.log(dom)
-// console.log(render)
-// console.log(images)
   let viewport = images(800,600);
-  // console.log(dom.children[0].children[3].children[1])
-  render(viewport,dom.children[0].children[3].children[1].children[3]);
+  // render(viewport,dom.children[0].children[3].children[1].children[3]);
+  render(viewport,dom);
 
   viewport.save("viewport.jpg")
 
