@@ -90,7 +90,7 @@ function computedCSS(element){
             }
         }
         let matched = false //每一条规则的mached
-        console.log(j >= selectorParts.length)
+        // console.log(j >= selectorParts.length)
         if(j >= selectorParts.length){
             matched = true
         }
@@ -399,5 +399,5 @@ module.exports.parseHTML = function parseHTML(html){
 
     state = state(EOF)//处理文件结束的
     return stack[0]
-    console.log(stack[0])
+    // console.log(stack[0])
 }

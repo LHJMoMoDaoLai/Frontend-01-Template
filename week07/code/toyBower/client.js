@@ -60,11 +60,11 @@ ${this.bodyText}`;
         connection.on('data', (data) => {
           //接收数据包并判断包是否结束
           parser.receive(data.toString())
-          console.log(parser.isFinished)
+          // console.log(parser.isFinished)
           if(parser.isFinished){
             resolve(parser.response)
           }
-          console.log(parser.response)
+          // console.log(parser.response)
           // console.log(parser.headers)
           // resolve(data.toString());
           // console.log(parser)

@@ -30,12 +30,13 @@ function render(viewport,element){
         console.log(element.style.height,'-------------height')
         var img = images(element.style.width,element.style.height);
         // var img = images(100,100);
-
+        console.log(element.style['background-color'])
         if(element.style['background-color']){
             let color = element.style['background-color'] || "rgb(0,0,0)";
-            let rgbFlag = color.match(/rgb\((\d+),(\d+),(\d+)\)/);
+            color.match(/rgb\((\d+),(\d+),(\d+)\)/);
             let color16 = color.match(/^#/);
-            if(rgbFlag){
+            // console.log(color.indexOf("rgb")>-1)
+            if(color.indexOf("rgb")>-1){
                 img.fill(Number(RegExp.$1),Number(RegExp.$2),Number(RegExp.$3),1);
             } else if(color16){
                 let colorRgbArr = colorRgb(color)
