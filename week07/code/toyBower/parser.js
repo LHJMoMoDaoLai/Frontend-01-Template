@@ -12,8 +12,9 @@ let rules = [];
 
 function addCSSRules(text){
     var ast = css.parse(text);
-    // console.log(JSON.stringify(ast,null,"    "));
     rules.push(...ast.stylesheet.rules);
+    
+    console.log(JSON.stringify(ast,null,"    "));
 }
 function matchF(element,selector){
     if(!selector || !element.attributes){
