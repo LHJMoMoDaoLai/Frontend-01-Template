@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="x">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+    </div>
+    <div id="b"></div>
+
+    <div id="c" style="width:200px;height:200px;background:#f0f;">
+        <div id="d" style="width:100px;height:100px;background:#f66;"></div>
+    </div>
+</body>
+<script>
+    let x = document.getElementById("x")
+    let b = document.getElementById("b")
+
+    // for(let i = 0;i<x.children.length;i++){
+    //     b.appendChild(x.children[i])// 2413
+    // }
+
+    while(x.children.length){
+        b.appendChild(x.children[0]) // 1234
+    }
+
+
+
+    const myElement = document.querySelector('body');
+
+    // Retrieve all computed styles with computedStyleMap()
+    const allComputedStyles = myElement.computedStyleMap();
+
+    // iterate thru the map of all the properties and values, adding a <dt> and <dd> for each
+    let cssArrObj = [],cssArr=[]
+    for (const [prop, val] of allComputedStyles) {
+        console.log(prop)
+        console.log(val)
+        // properties
+        // let cssObj = {
+        //     [prop]: `${val}`
+        // }
+        // cssArrObj.push(cssObj)
+        // cssArr.push(prop)
+    }
+    // console.log(JSON.stringify(cssArrObj))
+</script>
+</html>
