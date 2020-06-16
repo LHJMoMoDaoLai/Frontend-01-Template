@@ -1,13 +1,13 @@
-var lis = document.getElementById('container').children
-let rulest = []
-for (let li of lis) {
-  if (li.getAttribute('data-tag').match(/css/)) {
-    rulest.push({
-      name: li.children[1].innerText,
-      url: li.children[1].children[0].href
-    })
-  }
-}
+// var lis = document.getElementById('container').children
+// let rulest = []
+// for (let li of lis) {
+//   if (li.getAttribute('data-tag').match(/css/)) {
+//     rulest.push({
+//       name: li.children[1].innerText,
+//       url: li.children[1].children[0].href
+//     })
+//   }
+// }
 
 
 let iframe = document.createElement("iframe");
@@ -19,8 +19,10 @@ function happlen(element,event){
     return new Promise(function(resolve){
         let handel = ()=>{
             resolve()
-            element.removeEventListener(event,handel)
+            console.log(element)
+            
         }
+        element.addEventListener(event,handel)
     })
 }
 let standards = [
@@ -582,6 +584,7 @@ void async function(){
         iframe.src = standard.url;
         console.log(standard.name);
         await happlen(iframe,"load")
+        //iframeDocumentContent
     }
-}
+}()
 

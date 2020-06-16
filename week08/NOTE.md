@@ -2,8 +2,8 @@
 
 ## 选择器
 ### 简单选择器
-+ *
-+ div svg|a 
+**+ *
+**+ div svg|a 
 + .class
 + #id
 + [attr=value]
