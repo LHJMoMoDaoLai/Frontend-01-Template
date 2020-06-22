@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+         .cell {
+        display:inline-block;
+        width:6px;
+        height:6px;
+        background-color: gray;
+        border-bottom:solid 1px white;
+        border-right:solid 1px white;
+        vertical-align: middle;
+        line-height:6px;
+        
+    }
+    #container{
+        width:701px;
+        font-size:0;
+    }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <button onclick="localStorage.map = JSON.stringify(map)">save</button>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+
+        
+        class Sorted{
+            constructor(data,compare){
+                this.data = data;
+                this.compare = compare;
+            }
+
+            take() {
+                // debugger
+                if(this.data.length<=0) return;
+                let min = this.data[0];
+                let minIndex = 0;
+                for(let i = 1; i<this.data.length; i++){
+                    if(this.compare(this.data[i],min) <0){
+                        min = this.data[i];
+                        minIndex = i;
+                    }
+                }
+                this.data[minIndex] = this.data[this.data.length -1];
+                this.data.pop()
+                return min
+            }  
+            
+            insert(v) {
+                this.data.push(v)
+            }
+            get length(){
+                return this.data.length
+            }
+        }
+        
+        // var map = new Array(10001).join(0).split("").map(()=>{})
+        var map = localStorage.map?JSON.parse(localStorage.map): new Array(10000).fill(0);
+
+        //鼠标是否按下  按下再移动才开始画，按下时mouse=true
+        var mouse = false;
+
+        //橡皮檫功能 
+        var clear = false
+        function show(){
+            let container = document.getElementById("container");
+            for(let y = 0;y<100;y++){
+                for(let x = 0;x<100;x++){
+                    let cell = document.createElement("div");
+                    cell.classList.add("cell")
+                    container.appendChild(cell)
+
+                    if(map[y*100 + x] === 1){
+                        cell.style.backgroundColor = "black";
+                    }
+
+                    cell.addEventListener("mouseover",e=>{
+                        if(mouse){
+                            if(clear){
+                                cell.style.backgroundColor = ""
+                                map[y*100 + x] = 0
+                            } else {
+                                cell.style.backgroundColor = "black"
+                                map[y*100 + x] = 1
+                            }
+                            
+                        }
+                    })
+                }
+            }
+        }
+        document.addEventListener("mousedown",e=>{
+            mouse = true
+            console.log(e.which)
+            clear = (e.which===3);
+        })
+        document.addEventListener("mouseup",e=>{
+            mouse = false
+        })
+
+        document.addEventListener("contextmenu",(e)=>e.preventDefault())
+        function sleep(t){
+            return new Promise((resolve,reject)=>{
+                setTimeout(resolve,t)
+            })
+        }
+        async function findPath(map, start, end){
+            map = map.slice()
+            // let queue = [start]
+            function distance([x,y]){
+                return ((x - end[0]) ** 2) + (y-end[1]**2)
+            }
+
+            let collection = new Sorted([start], (a,b) => distance(a)- distance(b)) 
+
+            container.children[start[1] * 100 + start[0]].style.backgroundColor = "pink";
+            container.children[end[1] * 100 + end[0]].style.backgroundColor = "pink";
+            async function insert([x,y], pre){
+                if(map[100*y+x]) return ;
+                if(x<0||y<0||x>=100||y>=100) return;
+                map[100*y + x] = pre
+                container.children[y * 100 + x].style.backgroundColor = "red";
+                // debugger
+                await sleep(1)
+                collection.insert([x,y])
+            }
+            while(collection.length){
+                let [x,y] = collection.take(); //pop unshift  /push shift
+               
+                if(x == end[0] && y === end[1]) {
+                   let path = []
+                    while(x!== start[0] ||y !== start[1]){
+                        path.push([x,y])
+                        container.children[y * 100 + x].style.backgroundColor = "pink";
+                        [x,y] = map[y * 100 + x];
+                    }
+                    return path;
+                }
+                await insert([x-1,y],[x,y])
+                await insert([x+1,y],[x,y])
+                await insert([x,y-1],[x,y])
+                await insert([x,y+1],[x,y])
+
+                await insert([x-1,y-1],[x,y])
+                await insert([x+1,y-1],[x,y])
+                await insert([x-1,y+1],[x,y])
+                await insert([x+1,y+1],[x,y])
+            }
+            return null
+        }
+        
+        show()
+
+    </script>
+</body>
+</html>

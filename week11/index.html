@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        ul,li{
+            list-style: none;
+        }
+        .box{
+            display: flex;
+        }
+        .light{
+            width:50px;
+            height:50px;
+            background:#eee;
+            border-radius: 50%;
+            margin-right:10px;
+        }
+        .light.red{
+            background:red;
+        }
+        .light.green{
+            background:red;
+        }
+        .light.blue{
+            background:red;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="box" id="box"></ul>
+</body>
+<script>
+    let lights = [0,0,0]
+    function show(){
+        let box = document.getElementById("box")
+        for(let i =0;i<lights.length;i++){
+           let li =  document.createElement("li")
+
+            if(lights[i]==0){
+                li.classList.add("light")
+            } else if(lights[i]==1){
+                li.classList.add("red")
+            }else if(lights[i]==2){
+                li.classList.add("green")
+            }else if(lights[i]==3){
+                li.classList.add("blue")
+            }
+            box.appendChild(li)
+        }
+    }
+    show()
+    
+    function go(){
+        setTimeout(function(){
+            // lights[0] = 
+        },10000)
+    }
+    
+    function redGo(){
+        setTimeout(function(){
+            Go()
+        },10000)
+    }
+
+    
+
+
+</script>
+</html>
