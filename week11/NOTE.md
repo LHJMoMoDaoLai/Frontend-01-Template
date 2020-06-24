@@ -228,7 +228,203 @@
 </body>
 </html>
 ```
+4. 寻路
+ * 思路：
+    1) 起点的上下左右点，然后不断往外扩散，走过的点就不再走。 这个是广度优先搜索
+    2) 深度优先搜索：就是一条道走到黑，适用于不去找最佳路径。广度优先搜索和深度优先搜索的区别就是数据结构不一样。    
+    3) 点有三种状态：  
+        白格：没有触达，不知道能不能走到；
+        紫格：已经走到它了，但没有判断它的四周是否能走，四周的格不变紫；
+        蓝格：已经走的格，且四周已走，四周的格变紫   
+    4) 数组的方法
+        push()：在数组的末尾添加一个或多个元素，返回数组的新长度  
+        pop()：移除数组的最后一项，返回移除项  
+        shift():移除数组的第一项，返回移除项  
+        unshift():在数组的第一项前面添加一个或多个元素，返回数组的长度  
 
+        LIFO：last in first out 后进先出的数据结构，类似栈的行为。在栈顶插入和移除。
+        ```
+            let arr = [1,2];
+            let length = arr.push(3) //length:3
+            let item =  arr.pop() //item 3
+        ```
+        FIFO:first in first out 先进先出的数据结构，类似队列的行为。在队尾增加元素，在队头删除元素
+        ```
+            let arr = [1,2];
+            var data = arr.shift() //data:1
+            var math = arr.unshift(4,5,6)//math:4；arr:4,5,6,2
+
+        ```
+    ```
+        function sleep(t){
+            return new Promise((resolve,reject)=>{
+                setTimeout(resolve,t)
+            })
+        }
+        
+        async function findPath(map,start,end){
+            //创建一个队列，将紫色格放到这个队列里，最先开始放开始的那个格，
+            let queue = [start];
+
+            async function insert([x,y]){
+                map = map.slice()
+
+                if(map[100*y + x] !==0) return
+                if(x<0||y<0||x>=100||y>=100) return
+
+                map[100*y + x]  = 2
+
+                container.children[y * 100 + x].style.backgroundColor = "red";
+                // debugger
+                await sleep(1)
+
+                queue.push([x,y]);
+            }
+
+            while(queue.length){
+
+                //队列是先进先出，队尾入队，对头出队。 //pop unshift / push shift
+                let [x,y] = queue.shift()//从队头拿出去一个格子
+
+                //找到终点，就return true
+                if(x === end[0] && y === end[1]){
+                    return true
+                }
+                
+
+                //找出它的上下左右格 [x,y-1],[x,y+1],[x-1,y],[x+1,y] 判断是否能并入队，当遇到障碍的时候是不能入队的，到边的不能走
+                await insert([x,y-1]);
+                await insert([x,y+1]);
+                await insert([x-1,y]);
+                await insert([x+1,y]);
+                
+
+            }
+
+            return false 
+
+        }
+
+
+    ```
+
+    5) 把路径找出来  
+        把每个点找出来。 
+        ```
+        function sleep(t){
+            return new Promise((resolve,reject)=>{
+                setTimeout(resolve,t)
+            })
+        }
+        
+        async function findPath(map,start,end){
+            //创建一个队列，将紫色格放到这个队列里，最先开始放开始的那个格，
+            map = map.slice()
+            let queue = [start];
+
+            async function insert([x,y], pre){
+
+                if(map[100*y + x] !==0) return
+                if(x<0||y<0||x>=100||y>=100) return
+
+                map[100*y + x]  = pre
+                container.children[y * 100 + x].style.backgroundColor = "red";
+
+                await sleep(2)
+                queue.push([x,y]);
+            }
+
+            while(queue.length){
+
+                //队列是先进先出，队尾入队，对头出队。 //pop unshift / push shift
+                let [x,y] = queue.shift()//从队头拿出去一个格子
+
+                //找到终点，就把路径存起来，并标上颜色。
+                if(x === end[0] && y === end[1]){
+                    let path = []
+                    while(x !== start[0] || y !== start[1]){
+                        path.push([x,y]);
+                        container.children[y* 100 + x].style.backgroundColor = "pink";
+                        [x,y] = map[y*100 + x]
+                        console.log(x,y)
+                    }
+                    return path;
+                }
+
+                //找出它的上下左右格 [x,y-1],[x,y+1],[x-1,y],[x+1,y] 判断是否能并入队，当遇到障碍的时候是不能入队的，到边的不能走
+                await insert([x-1,y],[x,y])
+                await insert([x+1,y],[x,y])
+                await insert([x,y-1],[x,y])
+                await insert([x,y+1],[x,y])
+
+                //斜线
+                await insert([x-1,y-1],[x,y])
+                await insert([x+1,y-1],[x,y])
+                await insert([x-1,y+1],[x,y])
+                await insert([x+1,y+1],[x,y])
+                
+
+            }
+
+            return null 
+
+        }
+
+        ``` 
+    6) 优化寻路算法，已有的寻路算法比较笨拙，只能横着竖着走，不能对角线走。    
+        ```
+            async function findPath(map,start,end){
+                //创建一个队列，将紫色格放到这个队列里，最先开始放开始的那个格，
+                map = map.slice()
+                let queue = [start];
+
+                async function insert([x,y], pre){
+
+                    if(map[100*y + x] !==0) return
+                    if(x<0||y<0||x>=100||y>=100) return
+
+                    map[100*y + x]  = pre
+                    container.children[y * 100 + x].style.backgroundColor = "red";
+
+                    await sleep(2)
+                    queue.push([x,y]);
+                }
+
+                while(queue.length){
+
+                    //队列是先进先出，队尾入队，对头出队。 //pop unshift / push shift
+                    let [x,y] = queue.shift()//从队头拿出去一个格子
+
+                    //找到终点，就把路径存起来，并标上颜色。
+                    if(x === end[0] && y === end[1]){
+                        let path = []
+                        while(x !== start[0] || y !== start[1]){
+                            path.push([x,y]);
+                            container.children[y* 100 + x].style.backgroundColor = "pink";
+                            [x,y] = map[y*100 + x]
+                            console.log(x,y)
+                        }
+                        return path;
+                    }
+
+                    //找出它的上下左右格 [x,y-1],[x,y+1],[x-1,y],[x+1,y] 判断是否能并入队，当遇到障碍的时候是不能入队的，到边的不能走
+                    await insert([x-1,y],[x,y])
+                    await insert([x+1,y],[x,y])
+                    await insert([x,y-1],[x,y])
+                    await insert([x,y+1],[x,y])
+                    
+
+                }
+
+                return null 
+
+            }
+        ```
+    7) 优化寻路算法，已有的寻路算法性能比较低，可以用另一种
+        ```
+            
+        ```
+    8) 
 ### 异步编程
 1. 红绿灯问题
 绿灯10秒  黄灯2秒 红灯5秒无限循环

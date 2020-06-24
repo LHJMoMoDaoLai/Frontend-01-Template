@@ -25,61 +25,34 @@
 <body>
     <div id="container"></div>
     <button onclick="localStorage.map = JSON.stringify(map)">save</button>
-    <script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
 
-
-        class BinaryHeap{
+        
+        class Sorted{
             constructor(data,compare){
                 this.data = data;
                 this.compare = compare;
             }
-            take(){
+
+            take() {
+                // debugger
                 if(this.data.length<=0) return;
                 let min = this.data[0];
                 let minIndex = 0;
-
-                let i =0;
-                while(i <this.data.length){
-                    if(i = i*2 + 1>=this.data.length) break;
-                    if(i = i*2 + 2>=this.data.length) {
-                        this.data[i]  = this.data[i*2 + 1];
-                        i = i*2 + 1;
-                        break;
+                for(let i = 1; i<this.data.length; i++){
+                    if(this.compare(this.data[i],min) <0){
+                        min = this.data[i];
+                        minIndex = i;
                     }
-                    // i的两个叶子节点 i*2+1  i*2 + 2
-                    if(this.compare(this.data[i*2+1] ,this.data[i*2 + 2])<0){
-                        
-                        this.data[i]  = this.data[i*2 + 1];
-                        i = i*2 + 1;
-                    } else {
-                        this.data[i] = this.data[i*2 + 2];
-                        i= i*2 + 2;
-                    }
-                    
                 }
-                if(i < this.data.length -1){
-                    this.insertAt(i,this.data.pop())
-                } else {
-                    this.data.pop()
-                }
-                
-
-                // fix heap
+                this.data[minIndex] = this.data[this.data.length -1];
+                this.data.pop()
                 return min
             }  
-            insertAt(i,v){
-                this.data[i] = v;
-                //找i的父元素 Math.floor((i-1)/2)
-                while(i>0&&this.compare(v,this.data[Math.floor((i-1)/2)])<0){
-                    this.data[i] = this.data[Math.floor((i-1)/2)]
-                    this.data[Math.floor((i-1)/2)] = v
-                    i = Math.floor((i-1)/2)
-
-                }
-            }
-            insert(v){
-                this.insertAt(this.data.length,v)
-                // this.data.push(v)
+            
+            insert(v) {
+                this.data.push(v)
             }
             get length(){
                 return this.data.length
@@ -131,56 +104,56 @@
         })
 
         document.addEventListener("contextmenu",(e)=>e.preventDefault())
+       
         function sleep(t){
             return new Promise((resolve,reject)=>{
                 setTimeout(resolve,t)
             })
         }
-        async function findPath(map, start, end){
-            map = map.slice()
-            // let queue = [start]
-            function distance([x,y]){
-                return ((x - end[0]) ** 2) + (y-end[1]**2)
-            }
+        
+        async function findPath(map,start,end){
+            //创建一个队列，将紫色格放到这个队列里，最先开始放开始的那个格，
+            let queue = [start];
 
-            let collection =new BinaryHeap([start], (a,b) => distance(a)- distance(b)) 
+            async function insert([x,y]){
+                map = map.slice()
 
+                if(map[100*y + x] !==0) return
+                if(x<0||y<0||x>=100||y>=100) return
 
-            container.children[start[1] * 100 + start[0]].style.backgroundColor = "pink";
-            container.children[end[1] * 100 + end[0]].style.backgroundColor = "pink";
-            async function insert([x,y],pre){
-                if(map[100*y+x]) return ;
-                if(x<0||y<0||x>=100||y>=100) return;
-                map[100*y + x] = pre
+                map[100*y + x]  = 2
+
                 container.children[y * 100 + x].style.backgroundColor = "red";
                 // debugger
                 await sleep(1)
-                collection.insert([x,y])
-            }
-            while(collection.length){
-                let [x,y] = collection.take(); //pop unshift  /push shift
-                if(x == end[0] && y === end[1]) {
-                   let path = []
-                    while(x!== start[0] ||y !== start[1]){
-                        path.push([x,y])
-                        container.children[y * 100 + x].style.backgroundColor = "pink";
-                        [x,y] = map[y * 100 + x];
-                    }
-                    return path;
-                }
-                await insert([x-1,y],[x,y])
-                await insert([x+1,y],[x,y])
-                await insert([x,y-1],[x,y])
-                await insert([x,y+1],[x,y])
 
-                await insert([x-1,y-1],[x,y])
-                await insert([x+1,y-1],[x,y])
-                await insert([x-1,y+1],[x,y])
-                await insert([x+1,y+1],[x,y])
+                queue.push([x,y]);
             }
-            return null
+
+            while(queue.length){
+
+                //队列是先进先出，队尾入队，对头出队。 //pop unshift / push shift
+                let [x,y] = queue.shift()//从队头拿出去一个格子
+
+                //找到终点，就return true
+                if(x === end[0] && y === end[1]){
+                    return true
+                }
+                
+
+                //找出它的上下左右格 [x,y-1],[x,y+1],[x-1,y],[x+1,y] 判断是否能并入队，当遇到障碍的时候是不能入队的，到边的不能走
+                await insert([x,y-1]);
+                await insert([x,y+1]);
+                await insert([x-1,y]);
+                await insert([x+1,y]);
+                
+
+            }
+
+            return false 
+
         }
-        
+
         show()
 
     </script>
