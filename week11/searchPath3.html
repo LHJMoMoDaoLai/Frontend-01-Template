@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+         .cell {
+        display:inline-block;
+        width:6px;
+        height:6px;
+        background-color: gray;
+        border-bottom:solid 1px white;
+        border-right:solid 1px white;
+        vertical-align: middle;
+        line-height:6px;
+        
+    }
+    #container{
+        width:701px;
+        font-size:0;
+    }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <button onclick="localStorage.map = JSON.stringify(map)">save</button>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+
+        
+        class Sorted{
+            constructor(data,compare){
+                this.data = data;
+                this.compare = compare;
+            }
+
+            take() {
+                // debugger
+                if(this.data.length<=0) return;
+                let min = this.data[0];
+                let minIndex = 0;
+                for(let i = 1; i<this.data.length; i++){
+                    if(this.compare(this.data[i],min) <0){
+                        min = this.data[i];
+                        minIndex = i;
+                    }
+                }
+                this.data[minIndex] = this.data[this.data.length -1];
+                this.data.pop()
+                return min
+            }  
+            
+            insert(v) {
+                this.data.push(v)
+            }
+            get length(){
+                return this.data.length
+            }
+        }
+        
+        // var map = new Array(10001).join(0).split("").map(()=>{})
+        var map = localStorage.map?JSON.parse(localStorage.map): new Array(10000).fill(0);
+
+        //鼠标是否按下  按下再移动才开始画，按下时mouse=true
+        var mouse = false;
+
+        //橡皮檫功能 
+        var clear = false
+        function show(){
+            let container = document.getElementById("container");
+            for(let y = 0;y<100;y++){
+                for(let x = 0;x<100;x++){
+                    let cell = document.createElement("div");
+                    cell.classList.add("cell")
+                    container.appendChild(cell)
+
+                    if(map[y*100 + x] === 1){
+                        cell.style.backgroundColor = "black";
+                    }
+
+                    cell.addEventListener("mouseover",e=>{
+                        if(mouse){
+                            if(clear){
+                                cell.style.backgroundColor = ""
+                                map[y*100 + x] = 0
+                            } else {
+                                cell.style.backgroundColor = "black"
+                                map[y*100 + x] = 1
+                            }
+                            
+                        }
+                    })
+                }
+            }
+        }
+        document.addEventListener("mousedown",e=>{
+            mouse = true
+            console.log(e.which)
+            clear = (e.which===3);
+        })
+        document.addEventListener("mouseup",e=>{
+            mouse = false
+        })
+
+        document.addEventListener("contextmenu",(e)=>e.preventDefault())
+       
+        function sleep(t){
+            return new Promise((resolve,reject)=>{
+                setTimeout(resolve,t)
+            })
+        }
+        
+        async function findPath(map,start,end){
+            //创建一个队列，将紫色格放到这个队列里，最先开始放开始的那个格，
+            let queue = [start];
+           let table = new Array(10000).fill(Infinity)
+            async function insert([x,y],fromStart){
+                map = map.slice()
+
+                if(map[100*y + x] !==0) return
+                if(x<0||y<0||x>=100||y>=100) return
+                if(fromStart > table[y* 100 + x]){
+                    return 
+                }
+                map[100*y + x]  = 2
+                table[100*y + x] = fromStart
+                container.children[y * 100 + x].style.backgroundColor = "red";
+                // debugger
+                await sleep(1)
+
+                queue.push([x,y]);
+            }
+
+            while(queue.length){
+                let fromStart = table[y*100 +x]
+                //队列是先进先出，队尾入队，对头出队。 //pop unshift / push shift
+                let [x,y] = queue.shift()//从队头拿出去一个格子
+
+                //找到终点，就return true
+                if(x === end[0] && y === end[1]){
+                    return true
+                }
+                
+
+                //找出它的上下左右格 [x,y-1],[x,y+1],[x-1,y],[x+1,y] 判断是否能并入队，当遇到障碍的时候是不能入队的，到边的不能走
+                await insert([x,y-1],fromStart+10);
+                await insert([x,y+1],fromStart+10);
+                await insert([x-1,y],fromStart+10);
+                await insert([x+1,y],fromStart+10);
+
+                await insert([x-1,y-1],fromStart+14);
+                await insert([x-1,y+1],fromStart+14);
+                await insert([x-1,y-1],fromStart+14);
+                await insert([x+1,y+1],fromStart+14);
+                
+
+            }
+
+            return false 
+
+        }
+
+        show()
+
+    </script>
+</body>
+</html>

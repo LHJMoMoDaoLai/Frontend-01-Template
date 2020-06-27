@@ -1,0 +1,25 @@
+<script>
+    function find(source,pattern){
+        let j = 0
+        for(let i = 0;i<source.length;i++){
+            console.log(source[i],pattern[j])
+            if(source[i] == pattern[j]){
+               j++
+            } else {
+                j = 0 //j回到哪个位置
+                if(source[i]=== pattern[j]){
+                    j++
+                }
+                
+                
+            }
+            if(j === pattern.length){
+                return true
+            }
+            
+        }
+        return false
+    }
+    //这个算法有缺陷 find("aab",'ab')
+    // find("abcabcacx","abcabx")
+</script>

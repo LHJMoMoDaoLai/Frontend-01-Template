@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        var regexp = /([0-9\.]+)|([ ])|([\r\n])|(\+)|(\-)|(\*)|(\/)/g
+
+        var dictionary = ["Number","whitespace","LineTeminator","+","-","*","/"]
+
+        function* tokenize(source){
+            var result = null;
+            var lastIndex = 0;
+
+            do{
+                //匹配
+                lastIndex = regexp.lastIndex
+                result = regexp.exec(source)
+                //判断匹配的结果
+                if(!result)
+                    break;
+                if(regexp.lastIndex - lastIndex> result.length)
+                    throw new Error("Unexpected token \"" +source.slice(lastIndex,regexp.lastIndex  -result[0].length)+"\"!")
+
+                //生成结果
+                let token = {
+                    type:null,
+                    value:null
+                }
+                for(var i = 0; i<dictionary.length;i++){
+                    if(result[i+1]){
+                        token.type= (dictionary[i])
+                        // console.log(dictionary)
+                    }
+                }
+                token.value = (result[0])
+
+                yield token;
+                // console.log(result[0])
+
+                
+
+            }while(result)
+            yield { type:"EOF"};
+        }
+       
+
+        function Expression(source){
+            if(source[0].type == "Add" && source[1].type == "EOF"){
+                let node = {
+                    type: "Expression",
+                    children: [source.shift(),source.shift()]
+                }
+                source.unshift(node);
+                return node;
+            }
+            Add(source)
+
+            return Expression(source)
+        }
+
+        function Add(source){
+            if(source[0].type === "Number"){
+                MultiplateExpression(source)
+                return Add(source)
+            }
+
+            if(source[0].type === "MultiplicationExpression"){
+                let node = {
+                    type:"Add",
+                    children: [source.shift()]
+                }
+                source.unshift(node);
+                return Add(source)
+            }
+
+            if(source[0].type === "Add"&&
+                source.length>1&&source[1].type=="+"){
+                let node = {
+                    type:"Add",
+                    children: [source.shift(),source.shift()]
+                }
+                MultiplateExpression(source)
+                node.children.push(source.shift())
+                source.unshift(node);
+                return Add(source)
+            }
+
+            if(source[0].type === "Add"&&
+                source.length>1&&source[1].type=="-"){
+                let node = {
+                    type:"Add",
+                    children: [source.shift(),source.shift()]
+                }
+                MultiplateExpression(source)
+                node.children.push(source.unshift())
+                source.unshift(node);
+                return Add(source)
+            }
+        }
+
+
+        function MultiplateExpression(source){
+            console.log(source)
+            if(source[0].type === "Number"){
+                let node = {
+                    type:"MultiplicationExpression",
+                    children: source.shift()
+                }
+                source.unshift(node);
+                return MultiplateExpression(source)
+            }
+
+            if(source[0].type === "MultiplicationExpression"&&
+                source.length>1&&source[1].type=="*"){
+                let node = {
+                    type:"MultiplicationExpression",
+                    children: [source.shift(),source.shift(),source.shift()]
+                }
+                source.unshift(node);
+                return MultiplateExpression(source)
+            }
+
+            if(source[0].type === "MultiplicationExpression"&&
+                source.length>1&&source[1].type=="/"){
+                let node = {
+                    type:"MultiplicationExpression",
+                    children: [source.shift(),source.shift(),source.shift()]
+                }
+                source.unshift(node);
+                return MultiplateExpression(source);
+            }
+
+            if(source[0].type ==="MultiplicationExpression" )
+                return source[0]
+            throw new Error()
+            // return source[0]
+        }
+        let source = []
+        for(let token of  tokenize("5+1024*2")){
+            console.log(token)
+            if(token.type !="whitespace" || token.type !="LineTeminator"){
+                source.push(token)
+
+            }
+        }
+        console.log(Add(source))
+        // tokenize("1024 + 10 *25")
+    </script>
+</body>
+</html>
