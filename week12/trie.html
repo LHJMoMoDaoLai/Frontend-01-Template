@@ -10,7 +10,7 @@
         class Trie{
             constructor(){
                 // this.root = Array(26).fill(null) 占的空间比较大
-                // this.root = new Map();
+                // this.root = new Map();//ma和object的区别：map里面可以存对象
                 this.root = Object.create(null);
             }
             insert(word){
@@ -24,10 +24,13 @@
                 if(!("$" in node)){
                     node["$"] = 0
                 }
-                node["$"] ++;
+                node["$"] ++;//给重复单词的计数
             }
+            //计数功能
             most(){
+                //记录最多的字符串的个数
                 let max = 0
+                //记录最多的字符串
                 let maxWord = null
                 let visit = (node,word)=>{
                     if(node.$&&node.$ >max){
@@ -43,9 +46,11 @@
             }
         }
 
+        //随机小写字母串
         function randomWord(length){
             var s = ""
             for(let i = 0;i<length;i++){
+                //随机小写字母串
                 s += String.fromCharCode(Math.random()*26 + "a".charCodeAt(0))
             }
            return s
