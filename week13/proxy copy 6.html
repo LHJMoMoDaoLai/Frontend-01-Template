@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input id="r" min=0 max=255 type="range"><br>
+    <input id="g" min=0 max=255 type="range"><br>
+    <input id="b" min=0 max=255 type="range"><br>
+    <div id="color" style="width:100px;height:100px;"></div>
+    <div id="text">Hello,{{text}}</div>
+    <script>
+
+        let handers = new Map()
+
+        let usedReactivities = []
+
+        let reactivities = new Map()
+        let object = {
+            a: {x:1},
+            b:2
+        }
+        function reactive(object){
+            //
+            if(reactivities.has(object)){
+                return reactivities.get(object)
+            }
+
+            //代理，提供钩子
+            let proxy = new Proxy(object, {
+                get(obj,prop){
+                    usedReactivities.push([obj,prop])
+                    if(typeof obj[prop] === "object"){
+                        return reactive(obj[prop])
+                    }
+                    return obj[prop]
+                },
+                set(obj,prop,val){
+                    console.log(obj,prop)
+                    obj[prop] = val
+                    if(handers.get(obj)){
+                        if(handers.get(obj).get(prop)){
+                            for(let hander of handers.get(obj).get(prop)){
+                                hander()
+                            }
+                        }
+                    }
+                    
+                    
+                    return obj[prop]
+                },
+            })
+            reactivities.set(object,proxy)
+            reactivities.set(proxy,proxy)
+            return proxy
+        }
+
+        //处理
+        function effect(heander){
+            //usedReactivities先清空，再收集
+            usedReactivities = []
+            heander()
+            console.log(usedReactivities)
+            for( let usedReactivity of usedReactivities){
+                let [obj,prop] = usedReactivity;
+                console.log(obj,prop)
+
+                if(!handers.has(obj)){
+                    handers.set(obj,new Map())
+                }
+
+                if(!handers.get(obj).has(prop)){
+                    handers.get(obj).set(prop,[])
+                }  
+                handers.get(obj).get(prop).push(heander)
+            }
+            // handers.push(heander)
+        }
+
+        let v;
+
+        let p1 = reactive({r:100,g:100,b:100})
+
+        effect(() =>{
+            document.getElementById("r").value = p1.r
+        })
+        effect(() =>{
+            document.getElementById("g").value = p1.g
+        })
+        effect(() =>{
+            document.getElementById("b").value = p1.b
+        })
+        effect(() =>{
+            // console.log(document.getElementById("color").style.backgroundColor)
+            // document.getElementById("color").style.backgroundColor = "rgb(100,100,100)"
+            document.getElementById("color").style.backgroundColor = `rgb(${p1.r},${p1.g},${p1.b})`
+            // console.log(document.getElementById("color").style.backgroundColor)
+        })
+        
+
+        document.getElementById("r").addEventListener("input",event=>{
+            p1.r = event.target.value
+        })
+        document.getElementById("g").addEventListener("input",event=>{
+            p1.g = event.target.value
+        })
+        document.getElementById("b").addEventListener("input",event=>{
+            p1.b = event.target.value
+        })
+
+        let range = document.createRange();
+        range.setStart(document.getElementById("text").childNodes[0],6)
+        range.setEnd(document.getElementById("text").childNodes[0],14)
+
+        let data = reactive({text:"World"})
+
+        effect(()=>{
+            range.extractContents()
+            range.insertNode(document.createTextNode(data.text))
+        })
+      
+    </script>
+</body>
+</html>

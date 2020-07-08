@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        let handers = new Map()
+
+        let usedReactivities = []
+        let object = {
+            a: 1,
+            b:2
+        }
+        function reactive(object){
+            //代理，提供钩子
+            return new Proxy(object, {
+                get(obj,prop){
+                    usedReactivities.push([obj,prop])
+                    return obj[prop]
+                },
+                set(obj,prop,val){
+                    console.log(obj,prop)
+                    obj[prop] = val
+                    if(handers.get(obj)){
+                        if(handers.get(obj).get(prop)){
+                            for(let hander of handers.get(obj).get(prop)){
+                                hander()
+                            }
+                        }
+                    }
+                    
+                    
+                    return obj[prop]
+                },
+            })
+        }
+
+        //处理
+        function effect(heander){
+            //usedReactivities先清空，再收集
+            usedReactivities = []
+            heander()
+            console.log(usedReactivities)
+            for( let usedReactivity of usedReactivities){
+                let [obj,prop] = usedReactivity;
+                console.log(obj,prop)
+
+                if(!handers.has(obj)){
+                    handers.set(obj,new Map())
+                }
+
+                if(!handers.get(obj).has(prop)){
+                    handers.get(obj).set(prop,[])
+                }  
+                handers.get(obj).get(prop).push(heander)
+            }
+            // handers.push(heander)
+        }
+
+        let v;
+        var b = false
+
+        let p1 = reactive({a:1})
+        let p2 = reactive({a:2})
+
+        effect(() =>v =b?2:p1.a)
+        console.log(v)
+        b = true
+
+        console.log(v)
+
+        p1.a = 10;
+
+        console.log(v)
+      
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input id="input" value="100" type="text">
+    <script>
+
+        let handers = new Map()
+
+        let usedReactivities = []
+
+        let reactivities = new Map()
+        let object = {
+            a: {x:1},
+            b:2
+        }
+        function reactive(object){
+            if(reactivities.has(object)){
+                return reactivities.get(object)
+            }
+
+            //代理，提供钩子
+            let proxy = new Proxy(object, {
+                get(obj,prop){
+                    usedReactivities.push([obj,prop])
+                    if(typeof obj[prop] === "object"){
+                        return reactive(obj[prop])
+                    }
+                    return obj[prop]
+                },
+                set(obj,prop,val){
+                    console.log(obj,prop)
+                    obj[prop] = val
+                    if(handers.get(obj)){
+                        if(handers.get(obj).get(prop)){
+                            for(let hander of handers.get(obj).get(prop)){
+                                hander()
+                            }
+                        }
+                    }
+                    
+                    
+                    return obj[prop]
+                },
+            })
+            reactivities.set(object,proxy)
+            reactivities.set(proxy,proxy)
+            return proxy
+        }
+
+        //处理
+        function effect(heander){
+            //usedReactivities先清空，再收集
+            usedReactivities = []
+            heander()
+            console.log(usedReactivities)
+            for( let usedReactivity of usedReactivities){
+                let [obj,prop] = usedReactivity;
+                console.log(obj,prop)
+
+                if(!handers.has(obj)){
+                    handers.set(obj,new Map())
+                }
+
+                if(!handers.get(obj).has(prop)){
+                    handers.get(obj).set(prop,[])
+                }  
+                handers.get(obj).get(prop).push(heander)
+            }
+            // handers.push(heander)
+        }
+
+        let v;
+
+        let p1 = reactive({r:100})
+
+        effect(() =>{
+            document.getElementById("input").value = p1.r
+        })
+        
+
+        document.getElementById("input").addEventListener("input",event=>{
+            p1.r = event.target.value
+        })
+      
+    </script>
+</body>
+</html>
