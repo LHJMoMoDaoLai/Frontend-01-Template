@@ -1,4 +1,6 @@
 # Proxy 与双向绑定
+思路：
+![待整理]https://mp.weixin.qq.com/s/e8JJMnSMjlr_5akteJy_cw
 
 # 组件化基础
 对象：Properties,Methods,Inherit
