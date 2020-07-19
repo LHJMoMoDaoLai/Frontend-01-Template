@@ -7,6 +7,9 @@ export class Timeline {
         for(let animation of this.animation){
 
             let {object,property,start,end,template,duration, delay,timingFunction} = animation
+
+            let progression = timingFunction(t-delay) //0-1
+
             if(t>animation.duration +animation.delay){
                 continue
             }
