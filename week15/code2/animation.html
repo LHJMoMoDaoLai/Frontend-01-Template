@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #el{
+            width: 100px;
+            height:100px;
+            background-color: #f66;
+        }
+    </style>
+</head>
+<body>
+    <div id="el"></div>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- <script type="text/babel">
+// Your ES6 code
+</script> -->
+<!-- type="module" -->
+    <script type="text/babel">
+        let el = document.getElementById("el")
+        import {Timeline,Animation} from "./animation"
+
+        let t1 = new Timeline()
+        t1.add(new Animation(el.style,"transform", v=>`transformX(${v}px)`,0,200,5000))
+        t1.start()
+
+
+    </script>
+</body>
+</html>
