@@ -142,26 +142,45 @@ CSS选择器选中的元素，在排版时可能产生多个盒。
 
 
 #### 盒模型
-分成四层，从里到外：
-content、padding、border、margin。
-width:在现代浏览器里，表示的是content
+盒分成四层，从里到外：
+content（内容）、padding（内边距）、border、margin（外边距/留白）。
+width:在现代浏览器里，表示的是content；
+盒的宽度是：content-width + padding-width + border-width + margin-width
+换行产生多个盒。
+没有一个盒包含margin
 box-sizing: 
 + content-box  
-  content的内容
+  盒的宽度是：content的内容
 + border-box
-  content、padding、border
+  盒的宽度是：content + padding + border
 
 ### 正常流
 #### 正常流排版
+块及元素占整行。  
 + 收集盒收进行里，就会产生一个行盒
 + 计算盒在行中的排布
 + 计算行的排布
   
   Te inline-box inline-box  =》inline formating context 从左到右排布  IFC
+ 
 
   line-box和block-box是从上到下排的
 
   line-box block-level-box block => block formating contetx  ：从上到下排布 BFC
+
+1. IFC:inline formatting context
+2. BFC:block formatting context
+3. BFC和containing block容易弄混
+
+#### 正常流的行模行
+文字有一个混排的关系，其中有几个重要的概念：  
+1. 文字本身有一个占据的空间，文字有一个对齐的关系
+2. 行内的盒跟文字有一个对齐的关系
+3. 行高的概念
+基线问题：  
+英文练习本从上往下数，第三根线，就是基线。baseline  
+文字上缘、文字下缘，根据行高，上下也有留白。 
+一个inline-block,如果没有内容，它的基线在底部。   
 
 
 

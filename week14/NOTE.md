@@ -1,5 +1,5 @@
-# 组件
-Carousel
+### 组件
+#### Carousel
 
     state
         activeIndex(currentIndex)
@@ -44,3 +44,5 @@ Carousel
         setInterval(tick,16)
         setTimeOut
 CarouselView
+
+#### 
