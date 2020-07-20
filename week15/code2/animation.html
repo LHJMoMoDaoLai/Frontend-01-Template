@@ -10,22 +10,46 @@
             height:100px;
             background-color: #f66;
         }
+        #el2{
+            width: 100px;
+            height:100px;
+            background-color: skyblue;
+            /* transition: transform linear 5s; */
+        }
     </style>
 </head>
 <body>
     <div id="el"></div>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<!-- <script type="text/babel">
-// Your ES6 code
-</script> -->
-<!-- type="module" -->
-    <script type="text/babel">
-        let el = document.getElementById("el")
-        import {Timeline,Animation} from "./animation"
+    <div id="el2"></div>
+    <button id="pause-button">pause</button>
+    <button id="resume-button">resume</button>
+    <button id="el2-start-time-button">el2-start-time</button>
+    <script type="module" >
+        
+        import {Timeline,Animation,ColorAnimation} from "./animation.js"
+        import {cubicBezier} from "./cubicBezier.js"
 
-        let t1 = new Timeline()
-        t1.add(new Animation(el.style,"transform", v=>`transformX(${v}px)`,0,200,5000))
+        let el = document.getElementById("el")
+        let el2 = document.getElementById("el2")
+        // let pause = document.getElementById("pause-button");
+        let linear = t => t
+        let ease = cubicBezier(.25,.1,.25,1)
+        let t1 = new Timeline
+        t1.add(new Animation(el.style,"transform",0,200,5000,0,linear, v=>`translateX(${v}px)`))
+        
+        
+        // document.getElementById("el2").style.transform = "translateX(200px)"
         t1.start()
+        document.getElementById("pause-button").addEventListener("click",()=>{
+            t1.pause()
+        })
+        document.getElementById("resume-button").addEventListener("click",()=>{
+            t1.resume()
+        })
+        document.getElementById("el2-start-time-button").addEventListener("click",()=>{
+            t1.add(new ColorAnimation(el.style,"backgroundColor",{r:0,g:0,b:0,a:1},{r:255,g:0,b:0,a:1},5000,0,linear))
+        })
+        
 
 
     </script>
