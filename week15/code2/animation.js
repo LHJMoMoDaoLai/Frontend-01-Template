@@ -98,6 +98,9 @@ export class Timeline {
         }
 
         this.animations = []
+        // this.animations.forEach(animation=>{
+        //     animation.finished  = false
+        // })
         this.requestId = null;
         this.state = "playing"
 
