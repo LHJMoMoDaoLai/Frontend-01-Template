@@ -33,19 +33,16 @@ function enableGusteure(element){
     })
     element.addEventListener("tourchmove",event=>{
         for(let touch of event.changedTouches){
-            context[touch.identifier] = Object.create(null)
             move(touch,context[touch.identifier])
         }
     })
     element.addEventListener("tourchend",event=>{
         for(let touch of event.changedTouches){
-            context[touch.identifier] = Object.create(null)
             end(touch,context[touch.identifier])
         }
     })
     element.addEventListener("touchcancel",event=>{
         for(let touch of event.changedTouches){
-            context[touch.identifier] = Object.create(null)
             cancel(touch,context[touch.identifier])
         }
     })
@@ -59,7 +56,7 @@ function enableGusteure(element){
     
     
     let start = (point,context)=>{
-        console.log("start",point.clientX,point.clientY)
+        context.startX = point.clientX,context.startY = point.clientY
         element.dispatchEvent(Object.assign(new CustomEvent("start"),{
             startX:context.clientX,
             startY:context.clientY,

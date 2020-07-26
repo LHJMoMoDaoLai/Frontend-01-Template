@@ -20,7 +20,14 @@ panstart
 start 0.5s pressstart
 pressstart end 变成press end
 ## 手势的转换
+start ->end  (tap)
 
+start ->(过了0.5秒) pressStart  ->(移动10px)panStart ->(move) pan ->(end) panEnd
+panEnd ->(end,速度>?) flick
+pressStart ->(end) pressend
+
+start ->(过了0.5秒，且移动了10px) panStart -> (move) pan ->(end) panEnd
+![手势图](./shoushitu.jpg)
 
 ## 关于系统手势
 系统手势可以关掉
