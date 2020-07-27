@@ -108,3 +108,18 @@ start ->(过了0.5秒，且移动了10px) panStart -> (move) pan ->(end) panEnd
         - 总结：mouseenter/mouseleave不会冒泡到子元素上，mouseover/mouseout会冒泡到子元素上。
         [区别实例](https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseover_event)
 
+
+
+## 派发事件
+custom
+
+
+
+## matrix
+css动画不会用来做一个很复杂的动画，不好控制。  
+matrix比较难解回来；  
+translate、rotate、scale、 skew  
+用矩阵来描述transform  
+线性代数 矩阵  
+
+

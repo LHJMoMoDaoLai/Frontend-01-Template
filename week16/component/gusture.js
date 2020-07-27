@@ -1,6 +1,6 @@
 // enableGusture(document.body);
 
-function enableGusture(element){
+export function enableGusture(element){
     let contexts = Object.create(null);
 
     let MOUSE_SYMBOL = Symbol("mouse")
