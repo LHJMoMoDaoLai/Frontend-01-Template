@@ -7,25 +7,6 @@ export class Timeline {
         this.state = "inited"
         // //剪头函数，保护this
         // this.tick = ()=>{
-        //     let t = Date.now() - this.startTime
-        //     let animations = this.animations.filter(animation =>!animation.finished)
-        //     for(let animation of this.animations){
-        //         let {object,property,start,end,template,duration, delay,timingFunction} = animation
-    
-        //         let progression = timingFunction((t - delay)/duration) //0-1之间的数，百分比
-    
-        //         if(t>duration +delay){
-        //             progression = 1
-        //             animation.finished = true
-        //             // continue
-        //         }
-        //         let val = start + progression * (end -start) //value就是根据progression来计算
-        //         object[property]  = template(val)
-        //     }
-        //     if(animations.length){
-        //         this.requestId = requestAnimationFrame(this.tick())
-        //     }
-            
         // }
     }
     //写在外面，this的值是不固定的

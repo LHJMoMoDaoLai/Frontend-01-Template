@@ -34,31 +34,118 @@ export class Carousel{
         // window.xtimeline = timeline
         timeline.start()
 
+        //用一个变量记录自动播放的timer
         let nextPicStopHandler = null
 
-        
-
-
         let children = this.data.map((url, currentPosition) =>{
+            //前后三个元素的位置
+            let lastPosition = (currentPosition - 1 + this.data.length) % this.data.length
+            let nextPositon = (currentPosition + 1) % this.data.length
+
+            //偏移量
+            let offset = 0 
+
+            //在拖拽点下去的时候记录一个偏移量,顺便停止自动播放动画，清除自动播放的timer，在这里可以使用children
             let onStart = ()=>{
-                ()=>timeline.pause()
+                timeline.pause()
                 clearTimeout(nextPicStopHandler)
+
+                let currentElement = children[currentPosition]
+                let currentTransformVal = Number(currentElement.style.transform.match(/translateX\(([\s\S]+)px\)/)[1])
+                offset = currentTransformVal + 500 * currentPosition;
+               
             }
+            //在移动的时候，transform:translateX = 移动的距离+ 开始的偏移量，在这里可以用children
             let onPan = (event)=>{
-                let lastPosition = (currentPosition - 1 + this.data.length) % this.data.length
-                let nextPositon = (currentPosition + 1) % this.data.length
+                let lastElement = children[lastPosition]
+                let currentElement = children[currentPosition]
+                let nextElement = children[nextPositon]
+
+                let currentTransformVal = -500 * currentPosition + offset
+                let lastTransformVal = -500 - 500 * lastPosition + offset
+                let nextTransformVal = 500 - 500 * nextPositon + offset
+
+                let dx = event.clientX - event.startX;
+
+                lastElement.style.transform = `translateX(${lastTransformVal+ dx}px)`
+                currentElement.style.transform = `translateX(${currentTransformVal+ dx}px)`
+                nextElement.style.transform = `translateX(${nextTransformVal+ dx}px)`
+                
+            }
+
+            //拖拽停止时，判断偏移量+拖拽的距离是否大于250，重置时间线，重新设置animation的开始位置、结束位置，一次动画，然后再重新设置position，重新开启定时器
+            let onPanend = (event)=>{
+                let direction = 0
+                let dx = event.clientX - event.startX;
+                if (dx+offset > 250) {
+                    direction = 1
+                } else if (dx+ offset < -250) {
+                    direction = -1
+                }
+                timeline.reset()
+                timeline.start()
 
                 let lastElement = children[lastPosition]
                 let currentElement = children[currentPosition]
                 let nextElement = children[nextPositon]
 
-                console.log(currentElement.style.transform)
+                // let currentTransformVal = -500 * currentPosition + offset + dx
+                // let lastTransformVal = -500 - 500 * lastPosition + offset + dx
+                // let nextTransformVal = 500 - 500 * nextPositon + offset + dx
+
                 
-                console.log()
-                let currentTransformVal = Number(currentElement.style.transform.match(/translateX\(([\s\S])px\)/)[1])
-                console.log(currentTransformVal)
+                let lastAnimation = new Animation(
+                    lastElement.style,
+                    "transform",
+                    -500 - 500 * lastPosition + offset + dx,
+                    -500 - 500 * lastPosition + direction * 500,
+                    500,
+                    0,
+                    ease,
+                    v=>`translateX(${v}px)`
+                ) 
+                let currentAnimation = new Animation(
+                    currentElement.style,
+                    "transform",
+                    -500 * currentPosition + offset + dx,
+                    -500 * currentPosition + direction * 500,
+                    500,
+                    0,
+                    ease,
+                    v=>`translateX(${v}px)`
+                ) 
+                let nextAnimation = new Animation(
+                    nextElement.style,
+                    "transform",
+                    500 - 500 * nextPositon + offset + dx,
+                    500 - 500 * nextPositon + direction * 500,
+                    500,
+                    0,
+                    ease,
+                    v=>`translateX(${v}px)`
+                ) 
+                
+
+                timeline.add(lastAnimation)
+                timeline.add(currentAnimation)
+                timeline.add(nextAnimation)
+
+                position = (position - direction + this.data.length) % this.data.length
+
+                nextPicStopHandler = setTimeout(nextPic, 3000)
+
+                //拖动的位置减去原本的位置
+                // current.style.transform = `translateX(${offset * 500 - 500 * position}px)`
+                // last.style.transform = `translateX(${offset * 500 - 500 - 500 * lastPosition}px)`
+                // next.style.transform = `translateX(${offset * 500 + 500 - 500 * nextPositon}px)`
+
+
+                // position = (position - offset + this.data.length) % this.data.length
+                // document.removeEventListener("mousemove", move);
+                // document.removeEventListener("mouseup", up);
             }
-            let element = <img src={url} onStart={onStart} onPan = {onPan} enableGusture={true}/>
+            let element = <img src={url} onStart={onStart} onPan = {onPan} onPanend={onPanend} enableGusture={true}/>
+            element.style.transform = "translateX(0px)"
             element.addEventListener("dragstart", event => event.preventDefault())
             return element
         })
@@ -113,63 +200,60 @@ export class Carousel{
         }
         nextPicStopHandler = setTimeout(nextPic,3000)
 
-        root.addEventListener("mousedown", event => {
+        // root.addEventListener("mousedown", event => {
 
-
-            let startX = event.clientX, startY = event.clientY;
-
-
-            let lastPosition = (position - 1 + this.data.length) % this.data.length
-            let nextPositon = (position + 1) % this.data.length
+        //     let startX = event.clientX, startY = event.clientY;
+        //     let lastPosition = (position - 1 + this.data.length) % this.data.length
+        //     let nextPositon = (position + 1) % this.data.length
 
             
-            let current = children[position]
-            let last = children[lastPosition]
-            let next = children[nextPositon]
+        //     let current = children[position]
+        //     let last = children[lastPosition]
+        //     let next = children[nextPositon]
 
-            current.style.transition = "ease 0s"
-            next.style.transition = "ease 0s"
-            last.style.transition = "ease 0s"
+        //     current.style.transition = "ease 0s"
+        //     next.style.transition = "ease 0s"
+        //     last.style.transition = "ease 0s"
 
-            current.style.transform = `translateX(${-500 * position}px)`;
-            last.style.transform = `translateX(${-500 - 500 * lastPosition}px)`;
-            next.style.transform = `translateX(${500 - 500 * nextPositon}px)`;
-
-
-            let move = event => {
-                current.style.transform = `translateX(${event.clientX - startX - 500 * position}px)`
-                last.style.transform = `translateX(${event.clientX - startX - 500 - 500 * lastPosition}px)`
-                next.style.transform = `translateX(${event.clientX - startX + 500 - 500 * nextPositon}px)`
+        //     current.style.transform = `translateX(${-500 * position}px)`;
+        //     last.style.transform = `translateX(${-500 - 500 * lastPosition}px)`;
+        //     next.style.transform = `translateX(${500 - 500 * nextPositon}px)`;
 
 
-                // console.log(event.clientX - startX, event.clientX - startY);
-            };
-            let up = event => {
-                let offset = 0
-
-                if (event.clientX - startX > 250) {
-                    offset = 1
-                } else if (event.clientX - startX < -250) {
-                    offset = -1
-                }
-
-                current.style.transition = ""
-                next.style.transition = ""
-                last.style.transition = ""
-
-                //拖动的位置减去原本的位置
-                current.style.transform = `translateX(${offset * 500 - 500 * position}px)`
-                last.style.transform = `translateX(${offset * 500 - 500 - 500 * lastPosition}px)`
-                next.style.transform = `translateX(${offset * 500 + 500 - 500 * nextPositon}px)`
+        //     let move = event => {
+        //         current.style.transform = `translateX(${event.clientX - startX - 500 * position}px)`
+        //         last.style.transform = `translateX(${event.clientX - startX - 500 - 500 * lastPosition}px)`
+        //         next.style.transform = `translateX(${event.clientX - startX + 500 - 500 * nextPositon}px)`
 
 
-                position = (position - offset + this.data.length) % this.data.length
-                document.removeEventListener("mousemove", move);
-                document.removeEventListener("mouseup", up);
-            };
-            document.addEventListener("mousemove", move);
-            document.addEventListener("mouseup", up);
-        })
+        //         // console.log(event.clientX - startX, event.clientX - startY);
+        //     };
+        //     let up = event => {
+        //         let offset = 0
+
+        //         if (event.clientX - startX > 250) {
+        //             offset = 1
+        //         } else if (event.clientX - startX < -250) {
+        //             offset = -1
+        //         }
+
+        //         current.style.transition = ""
+        //         next.style.transition = ""
+        //         last.style.transition = ""
+
+        //         //拖动的位置减去原本的位置
+        //         current.style.transform = `translateX(${offset * 500 - 500 * position}px)`
+        //         last.style.transform = `translateX(${offset * 500 - 500 - 500 * lastPosition}px)`
+        //         next.style.transform = `translateX(${offset * 500 + 500 - 500 * nextPositon}px)`
+
+
+        //         position = (position - offset + this.data.length) % this.data.length
+        //         document.removeEventListener("mousemove", move);
+        //         document.removeEventListener("mouseup", up);
+        //     };
+        //     document.addEventListener("mousemove", move);
+        //     document.addEventListener("mouseup", up);
+        // })
     
         return root
     }
