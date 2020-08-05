@@ -1,6 +1,6 @@
 // enableGusture(document.body);
 
-function enableGusture(element){
+export function enableGusture(element){
     let contexts = Object.create(null);
 
     let MOUSE_SYMBOL = Symbol("mouse")
@@ -118,7 +118,7 @@ function enableGusture(element){
     let end = (point,context) =>{
         let dx = point.clientX-context.startX,dy=  point.clientY-context.startY;
         if(context.isTap){
-            console.log("tap end")
+            // console.log("tap end")
             // var event = new CustomEvent("tap", {});
            
             element.dispatchEvent(new CustomEvent("tap", {}));
@@ -129,7 +129,7 @@ function enableGusture(element){
             let speed = Math.sqrt((recode.dx -dx) **2 + (recode.dy -dy) **2) /(Date.now() - recode.t) 
             let isFlick = speed> 2.5
             if(isFlick){
-                console.log("flick")
+                // console.log("flick")
                 element.dispatchEvent(Object.assign(new CustomEvent("flick", {}),{
                     startX:context.startX,
                     startY:context.startY,

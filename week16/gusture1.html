@@ -12,10 +12,24 @@
     </style>
 </head>
 <body>
-    
+    <div id="test" style="transform:translate(0,0);width:100px;height:100px;background-color:#f66 ;"></div>
 </body>
 <script src="./gusture1.js"></script>
 <script>
-   
+    document.addEventListener("contextmenu",event=>event.preventDefault())
+    document.addEventListener("selectstart",event=>event.preventDefault())
+    document.addEventListener("touchmove",event=>event.preventDefault(),{passive:false})
+    let element = document.getElementById("test")
+    enableGusture(element)
+    
+    let x= 0,y = 0;
+    element.addEventListener("pan",event=>{
+        element.style.transform = `translate(${x+ event.clientX - event.startX}px,${y+ event.clientY - event.startY}px)`
+    })
+    element.addEventListener("panend",event=>{
+        x = x+ event.clientX - event.startX
+        y = y+ event.clientY - event.startY
+        // element.style.transform = `translate(${x+ event.clientX - event.startX}px,${y+ event.clientY - event.startY}px)`
+    })
 </script>
 </html>

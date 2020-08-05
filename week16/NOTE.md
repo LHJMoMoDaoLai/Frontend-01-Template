@@ -30,9 +30,9 @@ start ->(过了0.5秒，且移动了10px) panStart -> (move) pan ->(end) panEnd
 ![手势图](./shoushitu.jpg)
 
 ## 关于系统手势
-系统手势可以关掉
-多指操作，多指操作一般是两指。两指操作一般会形成tansform,而且是有且仅有translate,rotate,scale。  
-爽直手势，将三个手势有机组合在一起，变成matrix transform(矩阵)
+系统手势可以关掉  
+多指操作，多指操作一般是两指。两指操作一般会形成tansform,而且是有且仅有translate,rotate,scale。    
+爽直手势，将三个手势有机组合在一起，变成matrix transform(矩阵)  
 
 
 ## 手势监听
@@ -107,4 +107,37 @@ start ->(过了0.5秒，且移动了10px) panStart -> (move) pan ->(end) panEnd
         - mouseenter/mouseleave DOM事件的行为与css的:hover伪类非常相似。
         - 总结：mouseenter/mouseleave不会冒泡到子元素上，mouseover/mouseout会冒泡到子元素上。
         [区别实例](https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseover_event)
+
+
+## 派发事件
+### customEvent
+- ```event = new CustomEvent(typeArg, customEventInit);```
+- typeArg：表示event名字的字符串  
+- customEventInit有以下字段：
+    - detail：和event相关的值，默认值为null。
+    - bubbles：一个boolean值，该事件能否冒泡。
+    - cancelable：一个boolean值，该事件是否可以取消。
+- 事例：
+```
+// add an appropriate event listener
+obj.addEventListener("cat", function(e) { process(e.detail) });
+
+// create and dispatch the event
+var event = new CustomEvent("cat", {
+  detail: {
+    hazcheeseburger: true
+  }
+});
+obj.dispatchEvent(event);
+```
+- [相关MDN及IE9之前可以用的代码](https://developer.mozilla.org/zh-CN/docs/Web/API/CustomEvent/CustomEvent)
+
+
+## matrix
+css动画不会用来做一个很复杂的动画，不好控制。  
+matrix比较难解回来；  
+translate、rotate、scale、 skew  
+用矩阵来描述transform  
+线性代数 矩阵  
+
 
