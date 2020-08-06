@@ -11,6 +11,10 @@ export class TabPanel{
         this.attributes.set(name, value);
         this[name] = value;
     }
+    getAttribute(name,value){
+        this.attributes.set(name, value);
+        this[name] = value;
+    }
     appendChild(child){
         this.children.push(child)
     }
