@@ -1,0 +1,23 @@
+{
+  "name": "testdemo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "coverage": "nyc mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "ava": "^3.11.1",
+    "mocha": "^8.1.1",
+    "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "webpack": "^4.44.1"
+  }
+}
