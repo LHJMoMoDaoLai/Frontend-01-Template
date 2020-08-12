@@ -5,7 +5,7 @@ let currentTextNode  = null
 
 const EOF = Symbol("EOF")//EOF:end of file  标识文件结束
 
-let stack ;
+let stack 
 function emit(token){
     let top = stack[stack.length-1];
     if(token.type === "text"){
@@ -82,7 +82,16 @@ function tagOpen(c){
         }
         return tagName(c)
     }else {
-        return ;
+        //
+        emit({
+            type: "text",
+            content : '<'
+        });
+        emit({
+            type: "text",
+            content : c
+        });
+        return data;
     }
 }
 function tagName(c){
@@ -136,7 +145,7 @@ function beforeAttributeName(c){
 }
 
 function attributeName(c){
-    if(c.match((/^[\t\n\f ]$/) || c === "/" || c === ">" || c === EOF)){
+    if(c.match(/^[\t\n\f ]$/) || c === "/" || c === ">" || c === EOF){
         return afterAttributeName(c)
     } else if(c === "="){
         return beforeAttributeValue
@@ -151,19 +160,33 @@ function attributeName(c){
 }
 
 function afterAttributeName(c){
-    // console.log(11111111)
-    // console.log(c)
     if(c.match((/^[\t\n\f ]$/))){
         return afterAttributeName
     } else if(c === "/"){
+        // 修复了遇到自封闭标签时，属性未被添加到元素上的问题。
+        if (currentAttribute && currentAttribute.name) {
+            currentToken[currentAttribute.name] = currentAttribute.value;
+            currentAttribute = {
+                name : "",
+                value : ""
+            };
+        }
         return selfClosingStartTag;
     } else if(c === ">"){
+        currentToken[currentAttribute.name] = currentAttribute.value;
+        emit(currentToken);
         return data
     } else if(c === "="){
         return beforeAttributeValue
     } else if(c === EOF){
 
     } else {
+        //属性在引号结束之后，直接跟随属性名，导致属性名被误认为是上一个属性的值的问题。解决多个attribute 合并为一个attribute的问题
+        currentToken[currentAttribute.name] = currentAttribute.value;
+        currentAttribute = {
+            name : "",
+            value : ""
+        };
         return attributeName(c)
     }
     // if()
@@ -186,11 +209,11 @@ function beforeAttributeValue(c){
 }
 
 function UnquotedAttributeValue(c){
-    if(c.match("/^[\t\n\f ]$/")){
-        currentAttribute[currentAttribute.name] = currentAttribute.value
+    if(c.match(/^[\t\n\f ]$/)){
+        currentToken[currentAttribute.name] = currentAttribute.value
         return beforeAttributeName
     } else if(c == "/"){
-        currentAttribute[currentAttribute.name] = currentAttribute.value
+        currentToken[currentAttribute.name] = currentAttribute.value
         return selfClosingStartTag
     } else if(c == ">"){
         currentToken[currentAttribute.name] = currentAttribute.value;
@@ -219,7 +242,7 @@ function doubleQuotedAttributeValue(c){
 }
 
 function singleQuotedAttributeValue(c){
-    if(c == "\""){
+    if(c == "\'"){
         currentToken[currentAttribute.name] = currentAttribute.value
         return afterQuotedAttributeValue;
     } else if( c == "\u0000"){
@@ -232,7 +255,7 @@ function singleQuotedAttributeValue(c){
     }
 }
 function afterQuotedAttributeValue(c){
-    if(c.match("/^[\t\n\f ]$/")){
+    if(c.match(/^[\t\n\f ]$/)){
         return beforeAttributeName;
     } else if(c =="/"){
         return selfClosingStartTag;
@@ -243,9 +266,12 @@ function afterQuotedAttributeValue(c){
     } else if(c === EOF){
 
     } else {
-        currentAttribute.value+= c;
-        return doubleQuotedAttributeValue
+        // currentAttribute.value+= c;
+        // return doubleQuotedAttributeValue
         
+        // 属性在引号结束之后，直接跟随属性名，导致属性名被误认为是上一个属性的值的问题。
+        currentAttribute = { name: "", value: "" }
+        return attributeName(c);
     }
 }
 
@@ -262,21 +288,152 @@ function selfClosingStartTag(c){
     }
 }
 
-module.exports.parseHTML = 
-function parseHTML(html){
-    stack = [{type:"document", children:[]}]
+//in script
+function scriptData(c){
+    
+    if(c == "<") {
+        return scriptDataLessThanSign;
+    } else {
+        emit({
+            type:"text",
+            content:c
+        });
+        return scriptData;
+    }
+}
+//in script received <
+function scriptDataLessThanSign(c){
+    if(c == "/") {
+        return scriptDataEndTagOpen;
+    } else {
+        emit({
+            type:"text",
+            content:"<"
+        });
+        return scriptData(c);
+    }
+}
+//in script received </
+function scriptDataEndTagOpen(c){
+    if(c == "s") {
+        return scriptDataEndTagNameS;
+    } else {
+        emit({
+            type:"text",
+            content:"<"
+        });
+
+        emit({
+            type:"text",
+            content:"/"
+        });
+
+        return scriptData(c);
+    }
+}
+//in script received </s
+function scriptDataEndTagNameS(c){
+    if(c == "c") {
+        return scriptDataEndTagNameC;
+    } else {
+        emit({
+            type:"text",
+            content:"</s"
+        });
+        return scriptData(c);
+    }
+}
+
+//in script received </sc
+function scriptDataEndTagNameC(c){
+    if(c == "r") {
+        return scriptDataEndTagNameR;
+    } else {
+        emit({
+            type:"text",
+            content:"</sc"
+        });
+        return scriptData(c);
+    }
+}
+
+//in script received </scr
+function scriptDataEndTagNameR(c){
+    if(c == "i") {
+        return scriptDataEndTagNameI;
+    } else {
+        emit({
+            type:"text",
+            content:"</scr"
+        });
+        return scriptData(c);
+    }
+}
+//in script received </scri
+function scriptDataEndTagNameI(c){
+    if(c == "p") {
+        return scriptDataEndTagNameP;
+    } else {
+        emit({
+            type:"text",
+            content:"</scri"
+        });
+        return scriptData(c);
+    }
+}
+//in script received </scrip
+function scriptDataEndTagNameP(c){
+    if(c == "t") {
+        return scriptDataEndTag;
+    } else {
+        emit({
+            type:"text",
+            content:"</scrip"
+        });
+        return scriptData(c);
+    }
+}
+//in script received </script
+let spaces = 0
+function scriptDataEndTag(c){
+    if(c == " ") {
+        spaces++;
+        return scriptDataEndTag;
+    } if(c == ">") {
+        emit({
+            type: "endTag",
+            tagName : "script"
+        });
+        return data;
+    } else {
+        emit({
+            type:"text",
+            content:"</script" + new Array(spaces).fill(' ').join('')
+        });
+        return scriptData(c);
+    }
+}
+
+
+module.exports.parseHTML = function parseHTML(html){
     // console.log(html)
     let state = data;
+    stack = [{type:"document", children:[]}]
     for(let c of html){
         // console.log(c)
         state = state(c);
+        if(stack[stack.length - 1].tagName === "script" && state == data) {
+            state = scriptData;
+        }
     }
 
     state = state(EOF)//处理文件结束的
-    console.log(stack)
+
+    currentToken = null
+    currentAttribute = null
+    currentTextNode  = null
+
     return stack[0]
     // console.log(stack[0].children)
     // console.log(stack[0].children[1].attributes)
 }
-
-// parseHTML("<div>addd</div>")

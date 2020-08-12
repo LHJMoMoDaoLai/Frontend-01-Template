@@ -22,7 +22,7 @@ function emit(token){
    
     if(token.type === "startTag"){
         let element = {
-            tyle: "element",
+            type: "element",
             children:[],
             attributes:[]
         }
@@ -187,10 +187,10 @@ function beforeAttributeValue(c){
 
 function UnquotedAttributeValue(c){
     if(c.match("/^[\t\n\f ]$/")){
-        currentAttribute[currentAttribute.name] = currentAttribute.value
+        currentToken[currentAttribute.name] = currentAttribute.value
         return beforeAttributeName
     } else if(c == "/"){
-        currentAttribute[currentAttribute.name] = currentAttribute.value
+        currentToken[currentAttribute.name] = currentAttribute.value
         return selfClosingStartTag
     } else if(c == ">"){
         currentToken[currentAttribute.name] = currentAttribute.value;
