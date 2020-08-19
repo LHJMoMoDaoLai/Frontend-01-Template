@@ -17,7 +17,7 @@ let carousel = <Carousel data = {[
 }></Carousel>
 
 let panel = <TabPanel >
-    <span title="this is a panel1">company1</span>
+    <span title="panel1">this is a  company1</span>
     <span title="this is a panel2">company2</span>
     <span title="this is a panel3">company3</span>
     <span title="this is a panel4">company4</span>

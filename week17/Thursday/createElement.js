@@ -43,6 +43,10 @@ export class Text{
     mountTo(parent){
         parent.appendChild(this.root)
     }
+    getAttribute(name){
+        return 
+    }
+    
 }
 class Wrap{
     constructor(type) {
@@ -59,8 +63,11 @@ class Wrap{
         if(name == "enableGusture"){
             enableGusture(this.root)
         }
-
        
+    }
+    getAttribute(name){
+        console.log(this.root.getAttribute(name))
+        return this.root.getAttribute(name)
     }
     appendChild(child){
         this.children.push(child)
@@ -71,6 +78,9 @@ class Wrap{
 
     get style(){
         return this.root.style
+    }
+    get classList(){
+        return this.root.classList
     }
     mountTo(parent){
         parent.appendChild(this.root)
