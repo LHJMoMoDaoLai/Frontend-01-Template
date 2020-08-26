@@ -38,17 +38,14 @@ export class TabPanel{
         }
         this.titleViews[i].classList.add("selected")
 
-        this.titleViews.innerText = this.children[i].title
+        // this.titleViews.innerText = this.children[i].title
     }
     render(){
         this.childViews = this.children.map(child => <div style="background-color:#fff;min-height:300px;">{child}</div>)
-        this.titleViews =  this.children.map((child,i) => {
-            console.log(child);
-            <span onClick={()=>this.select(i)}
-                                 style="display:inline-block;background-color:lightgreen;margin:5px 5px 0 5px;font-size:24px;width:auto;min-height:40px;" >{child.title||" "}</span>})
+        this.titleViews =  this.children.map((child,i) => <span class="tab-list" onClick={()=>this.select(i)}  >{child.getAttribute("title")||" "}</span>)
         setTimeout(()=>this.select(0),16)
-        return <div class="panel" style="border:1px solid  lightgreen;width:300px;min-height:300px;">
-            <h1 style="background-color:lightgreen;margin:0;">{this.titleViews}</h1>
+        return <div class="panel" style="border:1px solid  lightgreen;width:400px;min-height:300px;">
+            <h1 class="tab-box">{this.titleViews}</h1>
             <div  >
                 {this.childViews}
             </div>

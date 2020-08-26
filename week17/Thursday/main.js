@@ -18,10 +18,10 @@ let carousel = <Carousel data = {[
 
 let panel = <TabPanel >
     <span title="panel1">this is a  company1</span>
-    <span title="this is a panel2">company2</span>
-    <span title="this is a panel3">company3</span>
-    <span title="this is a panel4">company4</span>
-    <span title="this is a panel5">company5</span>
+    <span title="panel2">company2</span>
+    <span title="panel3">company3</span>
+    <span title="panel4">company4</span>
+    <span title="panel5">company5</span>
 </TabPanel>
 window.panel = panel
 // carousel.mountTo(document.body)
