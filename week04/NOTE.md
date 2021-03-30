@@ -320,11 +320,11 @@ afoo()
 
 ```
 
-new Promise(res=>res()).
-    then(
-        ()=>
-        setTimeout(()=>console.log(1),10000),
-        console.log(0));
+
+new Promise(res=>res()).then(
+    ()=>setTimeout(()=>console.log(1),10000),
+    console.log(0)
+);
 console.log(2);
 //0,2,1  相当于在then里加了两个参数
 ```
@@ -345,7 +345,7 @@ console.log("a");
 sleep(0).then(() => console.log("c")); 
 //abdc
 第一个宏任务里有a,b
-第二个宏任务里有 dc c是resolve传进来的
+第二个宏任务里有 dc c是resolve传进来的,异步的，d是同步任务，先执行。
 
 ```
 
